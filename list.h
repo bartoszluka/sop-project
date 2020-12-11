@@ -1,0 +1,109 @@
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <sys/time.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <string.h>
+#include <time.h>
+#include <string.h>
+
+#define ERR(source) (fprintf(stderr, "%s:%d\n", __FILE__, __LINE__), \
+                     perror(source), kill(0, SIGKILL),               \
+                     exit(EXIT_FAILURE))
+
+typedef struct Node
+{
+    int itemId;
+    int destRoomId;
+    struct Node *next;
+} Node;
+
+typedef struct Room
+{
+    int roomId;
+} Room;
+
+Node *newNode(int itemId, int destRoomId)
+{
+    Node *node = (Node *)malloc(sizeof(Node));
+    if (!node)
+    {
+        ERR("malloc failed");
+    }
+    node->itemId = itemId;
+    node->destRoomId = destRoomId;
+    node->next = NULL;
+    return node;
+}
+
+typedef struct List
+{
+    Node *head;
+    int Count;
+} List;
+
+void printNode(Node *node)
+{
+    printf("item id = %d\n", node->itemId);
+    printf("destination id = %d\n", node->destRoomId);
+}
+
+void freeNode(Node *node)
+{
+    free(node);
+}
+
+void foreachNode(List *list, void (*doThis)(Node *))
+{
+    Node *p = list->head;
+    while (p)
+    {
+        Node *tmp = p;
+        p = p->next;
+        doThis(tmp);
+    }
+}
+
+void printList(List *list)
+{
+    foreachNode(list, printNode);
+}
+
+List *newList()
+{
+    List *list = (List *)malloc(sizeof(List));
+    if (!list)
+    {
+        ERR("malloc failed");
+    }
+    return list;
+}
+
+void freeList(List *list)
+{
+    foreachNode(list, freeNode);
+    free(list);
+}
+
+void addToList(List *list, Node *node)
+{
+    if (!list->head)
+    {
+        list->head = node;
+    }
+    else
+    {
+        node->next = list->head;
+        list->head = node;
+    }
+    return;
+}
+
+void addIntsToList(List *list, int itemId, int destRoomId)
+{
+    Node *node = newNode(itemId, destRoomId);
+    addToList(list, node);
+}
