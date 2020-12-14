@@ -16,8 +16,7 @@
 
 typedef struct Node
 {
-    int itemId;
-    int destRoomId;
+    void *data;
     struct Node *next;
 } Node;
 
@@ -26,15 +25,16 @@ typedef struct Room
     int roomId;
 } Room;
 
-Node *newNode(int itemId, int destRoomId)
+Node *newNode(void *data)
 {
     Node *node = (Node *)malloc(sizeof(Node));
     if (!node)
     {
         ERR("malloc failed");
     }
-    node->itemId = itemId;
-    node->destRoomId = destRoomId;
+    // node->itemId = itemId;
+    // node->destRoomId = destRoomId;
+    node->data = data;
     node->next = NULL;
     return node;
 }
@@ -47,12 +47,18 @@ typedef struct List
 
 void printNode(Node *node)
 {
-    printf("item id = %d\n", node->itemId);
-    printf("destination id = %d\n", node->destRoomId);
+    // printf("item id = %d\n", node->itemId);
+    // printf("destination id = %d\n", node->destRoomId);
+}
+
+void printIntNode(Node *node)
+{
+    printf("%d\n", *(int *)(node->data));
 }
 
 void freeNode(Node *node)
 {
+    free(node->data);
     free(node);
 }
 
@@ -70,6 +76,11 @@ void foreachNode(List *list, void (*doThis)(Node *))
 void printList(List *list)
 {
     foreachNode(list, printNode);
+}
+
+void printIntList(List *list)
+{
+    foreachNode(list, printIntNode);
 }
 
 List *newList()
@@ -104,6 +115,14 @@ void addToList(List *list, Node *node)
 
 void addIntsToList(List *list, int itemId, int destRoomId)
 {
-    Node *node = newNode(itemId, destRoomId);
+    int *data = (int *)malloc(sizeof(int));
+    Node *node = newNode(data);
+    addToList(list, node);
+}
+void addIntsToList2(List *list, int value)
+{
+    int *data = (int *)malloc(sizeof(int));
+    *data = value;
+    Node *node = newNode(data);
     addToList(list, node);
 }
