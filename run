@@ -1,1 +1,1 @@
-echo > save.txt; ./home; cat save.txt
+make home; echo > save.txt; ./home; cat save.txt
