@@ -20,11 +20,6 @@ typedef struct Node
     struct Node *next;
 } Node;
 
-typedef struct Room
-{
-    int roomId;
-} Room;
-
 Node *newNode(void *data)
 {
     Node *node = (Node *)malloc(sizeof(Node));
@@ -90,6 +85,8 @@ List *newList()
     {
         ERR("malloc failed");
     }
+    list->head = NULL;
+    list->Count = 0;
     return list;
 }
 

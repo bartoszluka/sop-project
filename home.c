@@ -4,6 +4,19 @@
 
 void freeMatrix(List *vertices[], int n);
 
+typedef struct Room
+{
+    int roomId;
+    List *coonectedRooms;
+    List *items;
+} Room;
+
+typedef struct Item
+{
+    int itemId;
+    int destinationRoomId;
+} Item;
+
 int main(int argc, char *argv[])
 {
 
