@@ -101,7 +101,7 @@ void freeList(List *list)
 
 void addToList(List *list, Node *node)
 {
-    if (!list->head)
+    if (!(list->head))
     {
         list->head = node;
     }
