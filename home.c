@@ -1,29 +1,37 @@
 #include "save.h"
 #include <sys/stat.h>
 #include <sys/types.h>
+void saveStuff();
 
-void freeMatrix(List *vertices[], int n);
-
-typedef struct Room
+void printRooms(Room *rooms[], int n)
 {
-    int roomId;
-    List *coonectedRooms;
-    List *items;
-} Room;
-
-typedef struct Item
-{
-    int itemId;
-    int destinationRoomId;
-} Item;
+    for (int i = 0; i < n; i++)
+    {
+        printf("room number %d:\n", i);
+        printf("list: \n");
+        printIntList(rooms[i]->connectedRooms);
+        printf("items: \n");
+        for (int j = 0; j < ITEMS_IN_ROOM; j++)
+        {
+            printItem(rooms[i]->items[j]);
+        }
+    }
+}
 
 int main(int argc, char *argv[])
 {
+    saveStuff();
 
+    return 0;
+}
+
+void saveStuff()
+{
+
+    int n;
     const char *path = "save2.save";
-    int n = 5;
     // scanf("%d", &n);
-    List **vertices;
+    Room **vertices;
     vertices = readSaveFile(path, &n);
 
     if (!vertices)
@@ -31,19 +39,11 @@ int main(int argc, char *argv[])
         ERR("bad read");
     }
 
+    printRooms(vertices, n);
+
+    // free(vertices);
     const char *path2 = "save.save";
     writeSaveFile(vertices, n, path2);
-    // saveMatrixToFile(vertices, n, path);
-    // readFromFile("save2");
-    freeMatrix(vertices, n);
 
-    return 0;
-}
-void freeMatrix(List *vertices[], int n)
-{
-    for (int i = 0; i < n; i++)
-    {
-        freeList(vertices[i]);
-    }
-    free(vertices);
+    freeRoomsArray(vertices, n);
 }

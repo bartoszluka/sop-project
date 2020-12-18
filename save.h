@@ -1,5 +1,99 @@
 #include "list.h"
 #include <string.h>
+#define ITEMS_IN_ROOM 2
+
+typedef struct Item
+{
+    int itemId;
+    int destinationRoomId;
+} Item;
+
+typedef struct Room
+{
+    int roomId;
+    List *connectedRooms;
+    Item *items[ITEMS_IN_ROOM];
+} Room;
+
+Item *newItem(int itemId, int destinationRoomId)
+{
+    Item *item = (Item *)malloc(sizeof(Item));
+    if (!item)
+    {
+        ERR("malloc");
+    }
+    item->itemId = itemId;
+    item->destinationRoomId = destinationRoomId;
+    return item;
+}
+
+Room **createRooms(int size)
+{
+    Room **rooms = (Room **)malloc(sizeof(Room *) * size);
+    if (!rooms)
+    {
+        ERR("malloc");
+    }
+    return rooms;
+}
+Room *newRoom(int roomId)
+{
+    Room *room = (Room *)malloc(sizeof(Room));
+    if (!room)
+    {
+        ERR("malloc");
+    }
+
+    room->roomId = roomId;
+    room->connectedRooms = newList();
+
+    for (int i = 0; i < ITEMS_IN_ROOM; i++)
+    {
+        room->items[i] = newItem(-1, -1);
+    }
+
+    return room;
+}
+
+void printItem(Item *item)
+{
+    if (item)
+    {
+        printf("id: %d ", item->itemId);
+        printf("dest: %d\n", item->destinationRoomId);
+    }
+    else
+    {
+        printf("item is NULL\n");
+    }
+}
+
+void freeItem(Item *item)
+{
+    free(item);
+}
+void freeRoom(Room *room)
+{
+    freeList(room->connectedRooms);
+
+    for (int i = 0; i < ITEMS_IN_ROOM; i++)
+    {
+        if (room->items[i])
+            freeItem(room->items[i]);
+    }
+    // z tym jest "double free or corruption (out)"
+    // free(room);
+}
+
+void freeRoomsArray(Room **rooms, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        freeRoom(rooms[i]);
+    }
+    // z tym jest "double free or corruption (out)"
+    // free(rooms);
+}
 
 off_t fsize(const char *filename)
 {
@@ -24,7 +118,7 @@ void parseLine(char *line, List *list)
     }
 }
 
-List **readSaveFile(const char *path, int *sizeOfArray)
+Room **readSaveFile(const char *path, int *sizeOfArray)
 {
     int filesize = fsize(path);
     char *buff = (char *)malloc(sizeof(char) * filesize);
@@ -45,27 +139,28 @@ List **readSaveFile(const char *path, int *sizeOfArray)
     char *token = strtok_r(buff, "\n", &saveptr);
 
     *sizeOfArray = atoi(token);
-    int m;
-    List **vertices = (List **)malloc(sizeof(List *) * (*sizeOfArray));
+    int number = 0;
+    Room **rooms = createRooms(number);
 
     token = strtok_r(NULL, ":", &saveptr);
     while (token != NULL)
     {
 
-        m = atoi(token);
-        vertices[m] = newList();
+        number = atoi(token);
+        rooms[number] = newRoom(number);
 
         char *token2 = strtok_r(NULL, "\n", &saveptr);
-        parseLine(token2, vertices[m]);
+        parseLine(token2, rooms[number]->connectedRooms);
 
         token = strtok_r(NULL, ":", &saveptr);
     }
     free(buff);
     close(fd);
 
-    return vertices;
+    return rooms;
 }
-void writeSaveFile(List **vertices, int m, const char *path)
+
+void writeSaveFile(Room **rooms, int size, const char *path)
 {
     FILE *outfile;
 
@@ -75,16 +170,16 @@ void writeSaveFile(List **vertices, int m, const char *path)
         ERR("fopen");
     }
 
-    fprintf(outfile, "%d\n", m);
-    for (int i = 0; i < m; i++)
+    fprintf(outfile, "%d\n", size);
+    for (int i = 0; i < size; i++)
     {
         fprintf(outfile, "%d: ", i);
-        Node *p = vertices[i]->head;
+        Node *p = rooms[i]->connectedRooms->head;
         while (p)
         {
-            fprintf(outfile, "%d ", *(int *)(p->data));
-
+            Node *tmp = p;
             p = p->next;
+            fprintf(outfile, "%d ", *(int *)(tmp->data));
         }
         fprintf(outfile, "\n");
     }
