@@ -180,17 +180,13 @@ void findRouteFromTo(int from, int to, Room **rooms, int threadCount)
     }
     if (!found)
     {
-        printf("route from %d to %d does not exist\n", args.u, args.v);
+        printf("route from %d to %d does not exist\n", from, to);
     }
     else
     {
-        printf("route from %d to %d exist", args.u, args.v);
-
-        if (shortestRoute)
-        {
-            printf("its length is %d\n", shortestRoute->Count);
-            printIntList(shortestRoute);
-        }
+        printf("route from %d to %d exist\n", from, to);
+        printf("its length is %d\n", shortestRoute->Count);
+        printRoute(shortestRoute);
     }
     free(tids);
     free(shortestRoute);
@@ -205,7 +201,7 @@ void saveStuff()
     Room **vertices;
     vertices = readSaveFile(path, &n);
 
-    findRouteFromTo(4, 1, vertices, 10);
+    findRouteFromTo(1, 4, vertices, 10);
 
     if (!vertices)
     {

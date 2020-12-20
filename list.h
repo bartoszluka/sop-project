@@ -51,6 +51,18 @@ void printIntNode(Node *node)
     printf("%d\n", *(int *)(node->data));
 }
 
+void printRouteNode(Node *node)
+{
+    printf("%d", *(int *)(node->data));
+    if (node->next)
+    {
+        printf(" -> ");
+    }
+    else
+    {
+        printf("\n");
+    }
+}
 void freeNode(Node *node)
 {
     free(node->data);
@@ -71,6 +83,11 @@ void foreachNode(List *list, void (*doThis)(Node *))
 void printList(List *list)
 {
     foreachNode(list, printNode);
+}
+
+void printRoute(List *list)
+{
+    foreachNode(list, printRouteNode);
 }
 
 void printIntList(List *list)
