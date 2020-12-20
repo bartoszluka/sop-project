@@ -49,7 +49,7 @@ Room *newRoom(int roomId)
 
     for (int i = 0; i < ITEMS_IN_ROOM; i++)
     {
-        room->items[i] = newItem(-1, -1);
+        room->items[i] = NULL;
     }
 
     return room;
@@ -89,7 +89,8 @@ void freeRoomsArray(Room **rooms, int size)
 {
     for (int i = 0; i < size; i++)
     {
-        freeRoom(rooms[i]);
+        if (rooms[i])
+            freeRoom(rooms[i]);
     }
     // z tym jest "double free or corruption (out)"
     // free(rooms);

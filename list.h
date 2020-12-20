@@ -75,7 +75,14 @@ void printList(List *list)
 
 void printIntList(List *list)
 {
-    foreachNode(list, printIntNode);
+    if (!list || !list->head)
+    {
+        printf("list is NULL\n");
+    }
+    else
+    {
+        foreachNode(list, printIntNode);
+    }
 }
 
 List *newList()
