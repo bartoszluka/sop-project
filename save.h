@@ -8,6 +8,12 @@ typedef struct Item
     int destinationRoomId;
 } Item;
 
+typedef struct Gamer
+{
+    int position;
+    Item *items[ITEMS_IN_ROOM];
+} Gamer;
+
 typedef struct Room
 {
     int roomId;

@@ -81,6 +81,7 @@ void printIntList(List *list)
     }
     else
     {
+        // printf("count is %d\n", list->Count);
         foreachNode(list, printIntNode);
     }
 }
@@ -114,7 +115,7 @@ void addToList(List *list, Node *node)
         node->next = list->head;
         list->head = node;
     }
-    return;
+    list->Count++;
 }
 
 void addIntsToList(List *list, int itemId, int destRoomId)
