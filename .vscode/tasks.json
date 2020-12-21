@@ -4,18 +4,11 @@
     {
       "type": "shell",
       "label": "g++ build active file",
-      // "command": "/usr/bin/g++",
-      // "args": [
-      //   "-g",
-      //   "${file}",
-      //   "-o",
-      //   "${fileDirname}/${fileBasenameNoExtension}"
-      // ],
-      "command": "gcc",
+      "command": "/usr/bin/g++",
       "args": [
-        "-std=gnu99",
-        "-Wall",
+        "-g",
         "${file}",
+        "-Wall",
         "-lpthread",
         "-lm",
         "-o",

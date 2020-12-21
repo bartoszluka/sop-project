@@ -46,6 +46,20 @@ void printNode(Node *node)
     // printf("destination id = %d\n", node->destRoomId);
 }
 
+int listHasItem(List *list, int item)
+{
+    Node *p = list->head;
+    while (p)
+    {
+        if (*(int *)(p->data) == item)
+        {
+            return 1;
+        }
+        p = p->next;
+    }
+    return 0;
+}
+
 void printIntNode(Node *node)
 {
     printf("%d\n", *(int *)(node->data));

@@ -21,6 +21,30 @@ typedef struct Room
     Item *items[ITEMS_IN_ROOM];
 } Room;
 
+Gamer *newGamer(int position)
+{
+    Gamer *gamer = (Gamer *)malloc(sizeof(Gamer));
+    if (!gamer)
+    {
+        ERR("malloc");
+    }
+    gamer->position = position;
+    for (int i = 0; i < ITEMS_IN_ROOM; i++)
+    {
+        gamer->items[i] = NULL;
+    }
+    return gamer;
+}
+void freeGamer(Gamer *gamer)
+{
+    for (int i = 0; i < ITEMS_IN_ROOM; i++)
+    {
+        if (gamer->items[i])
+            free(gamer->items[i]);
+    }
+    free(gamer);
+}
+
 Item *newItem(int itemId, int destinationRoomId)
 {
     Item *item = (Item *)malloc(sizeof(Item));
@@ -72,6 +96,26 @@ void printItem(Item *item)
     {
         printf("item is NULL\n");
     }
+}
+
+void printAllItems(Item **items)
+{
+
+    for (int i = 0; i < ITEMS_IN_ROOM; i++)
+    {
+        printItem(items[i]);
+    }
+}
+void printGamer(Gamer *gamer)
+{
+    if (!gamer)
+    {
+        printf("gamer is NULL\n");
+        return;
+    }
+    printf("Im in room %d\n", gamer->position);
+    printf("my items are:\n");
+    printAllItems(gamer->items);
 }
 
 void freeItem(Item *item)
