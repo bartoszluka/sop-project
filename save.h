@@ -94,16 +94,24 @@ void printItem(Item *item)
     }
     else
     {
-        printf("item is NULL\n");
+        // printf("item is NULL\n");
     }
 }
 
 void printAllItems(Item **items)
 {
-
+    int count = 0;
     for (int i = 0; i < ITEMS_IN_ROOM; i++)
     {
+        if (items[i])
+        {
+            count++;
+        }
         printItem(items[i]);
+    }
+    if (count == 0)
+    {
+        printf("you have no items\n");
     }
 }
 void printGamer(Gamer *gamer)
@@ -113,8 +121,8 @@ void printGamer(Gamer *gamer)
         printf("gamer is NULL\n");
         return;
     }
-    printf("Im in room %d\n", gamer->position);
-    printf("my items are:\n");
+    printf("you are in room %d\n", gamer->position);
+    printf("your items are:\n");
     printAllItems(gamer->items);
 }
 

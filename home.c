@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <pthread.h>
 #define MAX_NUMBER_OF_ITERATIONS 1000
+#define MAX_PATH 100
 void saveStuff();
 
 void printRoom(Room *room)
@@ -184,7 +185,7 @@ int findItemInItems(Item **items, int itemId)
             return i;
         }
     }
-    printf("there is no such item in this room\n");
+    // printf("there is no such item in this room\n");
     return -1;
 }
 void pickItem(Gamer *gamer, Room *room, int itemId)
@@ -201,7 +202,7 @@ void pickItem(Gamer *gamer, Room *room, int itemId)
     }
 }
 
-void dropItem(Gamer *gamer, Room *room, int eqItemId)
+int dropItem(Gamer *gamer, Room *room, int eqItemId)
 {
     int slot = roomHasSlot(room);
     if (slot == -1)
@@ -213,106 +214,68 @@ void dropItem(Gamer *gamer, Room *room, int eqItemId)
         room->items[slot] = gamer->items[eqItemId];
         gamer->items[eqItemId] = NULL;
     }
+    return slot;
 }
 
-void game()
+void optionMoveTo(Room **rooms, Gamer *gamer, int optionInt)
 {
-    int n;
-    const char *path = "save2.save";
-    // scanf("%d", &n);
-    Room **rooms;
-    rooms = readSaveFile(path, &n);
-
-    if (!rooms)
+    if (listHasItem(rooms[gamer->position]->connectedRooms, optionInt))
     {
-        ERR("bad read");
+        gamer->position = optionInt;
+        printf("you moved to room %d\n", optionInt);
     }
-    // findRouteFromTo(1, 4, vertices, 10);
-
-    generateRandomMap(rooms, n);
-    srand(time(NULL));
-    int startPosition = rand() % n;
-    Gamer *gamer = newGamer(startPosition);
-    printGamer(gamer);
-    printRoom(rooms[gamer->position]);
-
-    while (1)
+    else
     {
-
-        int optionInt;
-        char *option;
-        scanf("%s", option);
-        printf("%s\n", option);
-        scanf("%d", &optionInt);
-
-        if (strcmp("move-to", option) == 0)
-        {
-            if (listHasItem(rooms[gamer->position]->connectedRooms, optionInt))
-            {
-                gamer->position = optionInt;
-                printf("you moved to room %d\n", optionInt);
-            }
-            else
-            {
-                printf("you can't go to this room\n");
-                printf("rooms you can go to are:\n");
-                printIntList(rooms[gamer->position]->connectedRooms);
-            }
-        }
-        else if (strcmp("pick-up", option) == 0)
-        {
-            int slot = findItemInItems(rooms[gamer->position]->items, optionInt);
-            if (slot != -1)
-            {
-                printf("you picked up the item\n");
-                printItem(rooms[gamer->position]->items[slot]);
-                pickItem(gamer, rooms[gamer->position], slot);
-            }
-            else
-            {
-                printf("you can't pick up this item\n");
-                printf("items you can pick up are:\n");
-                printAllItems(rooms[gamer->position]->items);
-            }
-        }
-
-        else if (strcmp("drop", option) == 0)
-        {
-            int slot = findItemInItems(gamer->items, optionInt);
-            if (slot != -1)
-            {
-                printf("you successfully dropped the item\n");
-                printItem(gamer->items[slot]);
-                dropItem(gamer, rooms[gamer->position], slot);
-            }
-            else
-            {
-                printf("you can't drop this item here\n");
-                printf("this room is full\n");
-            }
-        }
-        else if (strcmp("quit", option) == 0)
-        {
-            break;
-        }
+        printf("you can't go to this room\n");
+        printf("rooms you can go to are:\n");
+        printIntList(rooms[gamer->position]->connectedRooms);
     }
 }
-int main(int argc, char *argv[])
-{
-    //generateStuff();
-    // saveStuff();
-    game();
 
-    // gamerStuff();
-    // free(rooms);
-    return 0;
+void optionPickUp(Room **rooms, Gamer *gamer, int optionInt)
+{
+    int slot = findItemInItems(rooms[gamer->position]->items, optionInt);
+    if (slot != -1)
+    {
+        printf("you picked up the item\n");
+        printItem(rooms[gamer->position]->items[slot]);
+        pickItem(gamer, rooms[gamer->position], slot);
+    }
+    else
+    {
+        printf("you can't pick up this item\n");
+        printf("items you can pick up are:\n");
+        printAllItems(rooms[gamer->position]->items);
+    }
 }
 
-void findRouteFromTo(int from, int to, Room **rooms, int threadCount)
+void optionDrop(Room **rooms, Gamer *gamer, int optionInt)
+{
+    int slot = findItemInItems(gamer->items, optionInt);
+    if (slot != -1)
+    {
+        printItem(gamer->items[slot]);
+        if (dropItem(gamer, rooms[gamer->position], slot) != -1)
+        {
+            printf("you successfully dropped the item\n");
+        }
+    }
+    else
+    {
+        printf("you don't have such item in your inventory\n");
+    }
+}
+
+void findRouteFromTo(int from, int to, Room **rooms, int size, int threadCount)
 {
     srand(time(NULL));
     routeArguments args;
     args.rooms = rooms;
+    if (to > size || to < 0)
+    {
+        printf("room %d does not exist\n", to);
+        return;
+    }
     args.u = to;
     args.v = from;
     args.seed = rand();
@@ -346,12 +309,120 @@ void findRouteFromTo(int from, int to, Room **rooms, int threadCount)
     }
     else
     {
-        printf("route from %d to %d exist\n", from, to);
-        printf("its length is %d\n", shortestRoute->Count);
+        // printf("route from %d to %d exists\n", from, to);
+        // printf("its length is %d\n", shortestRoute->Count);
         printRoute(shortestRoute);
     }
     free(tids);
     free(shortestRoute);
+}
+void optionFindPath(Room **rooms, int size, Gamer *gamer, int threadCount, int to)
+{
+    findRouteFromTo(gamer->position, to, rooms, size, threadCount);
+}
+void game()
+{
+    int n;
+    const char *path = "save2.save";
+    // scanf("%d", &n);
+    Room **rooms;
+    rooms = readSaveFile(path, &n);
+
+    if (!rooms)
+    {
+        ERR("bad read");
+    }
+    // findRouteFromTo(1, 4, vertices, 10);
+
+    generateRandomMap(rooms, n);
+    srand(time(NULL));
+    int startPosition = rand() % n;
+    Gamer *gamer = newGamer(startPosition);
+    printf("welcome\n");
+    printRoom(rooms[gamer->position]);
+    printf("\n");
+
+    const char *moveto = "move-to";
+    const char *drop = "drop";
+    const char *save = "save";
+    const char *quit = "quit";
+    const char *pickup = "pick-up";
+    const char *findpath = "find-path";
+    const char *listme = "list-me";
+    const char *listroom = "list-room";
+
+    int optionInt;
+    char option[20];
+    while (1)
+    {
+        scanf("%s", option);
+
+        if (strcmp("quit", option) == 0)
+        {
+            freeRoomsArray(rooms, n);
+            freeGamer(gamer);
+            break;
+        }
+        else if (strcmp(moveto, option) == 0)
+        {
+            scanf("%d", &optionInt);
+            optionMoveTo(rooms, gamer, optionInt);
+        }
+        else if (strcmp(pickup, option) == 0)
+        {
+            scanf("%d", &optionInt);
+            optionPickUp(rooms, gamer, optionInt);
+        }
+        else if (strcmp(drop, option) == 0)
+        {
+            scanf("%d", &optionInt);
+            optionDrop(rooms, gamer, optionInt);
+        }
+        else if (strcmp(findpath, option) == 0)
+        {
+            int optionInt2;
+            scanf("%d", &optionInt);
+            scanf("%d", &optionInt2);
+            optionFindPath(rooms, n, gamer, optionInt, optionInt2);
+        }
+        else if (strcmp(save, option) == 0)
+        {
+            char savepath[MAX_PATH];
+            scanf("%s", savepath);
+            writeSaveFile(rooms, n, savepath);
+        }
+        else if (strcmp("list-me", option) == 0)
+        {
+            printGamer(gamer);
+        }
+        else if (strcmp("list-room", option) == 0)
+        {
+            printRoom(rooms[gamer->position]);
+        }
+        else
+        {
+            printf("command \"%s\" not found, try one of these instead\n", option);
+            printf("%s\n", moveto);
+            printf("%s\n", drop);
+            printf("%s\n", save);
+            printf("%s\n", quit);
+            printf("%s\n", pickup);
+            printf("%s\n", findpath);
+            printf("%s\n", listme);
+            printf("%s\n", listroom);
+        }
+        printf("\n");
+    }
+}
+int main(int argc, char *argv[])
+{
+    //generateStuff();
+    // saveStuff();
+    game();
+
+    // gamerStuff();
+    // free(rooms);
+    return 0;
 }
 
 void saveStuff()
