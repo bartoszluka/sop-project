@@ -119,7 +119,8 @@ void printIntList(List *list)
 
 List *newList()
 {
-    List *list = (List *)malloc(sizeof(List));
+    List *list = NULL;
+    list = (List *)malloc(sizeof(*list));
     if (!list)
     {
         ERR("malloc failed");

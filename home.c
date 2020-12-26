@@ -4,31 +4,54 @@
 #include <pthread.h>
 #define MAX_NUMBER_OF_ITERATIONS 1000
 #define MAX_PATH 100
-void saveStuff();
 
-void printRoom(Room *room)
+void addConnection(Room **rooms, int room1, int room2)
 {
-    printf("room number %d:\n", room->roomId);
-    printf("list: \n");
-    printIntList(room->connectedRooms);
-    printf("items: \n");
-    for (int j = 0; j < ITEMS_IN_ROOM; j++)
-    {
-        printItem(room->items[j]);
-    }
+    addIntsToList2(rooms[room1]->connectedRooms, room2);
+    addIntsToList2(rooms[room2]->connectedRooms, room1);
 }
 
-void printRooms(Room *rooms[], int arraySize)
+void generateConnections(Room **rooms, int arraySize)
 {
+    unsigned int pid = getpid();
+    int rand = rand_r(&pid) % (arraySize);
+    //generating random permutation of n numbers
+    int *permutation = (int *)calloc(sizeof(int), arraySize);
     for (int i = 0; i < arraySize; i++)
     {
-        printRoom(rooms[i]);
+        while (permutation[rand] != 0)
+        {
+            rand = rand_r(&pid) % (arraySize);
+        }
+        permutation[rand] = i;
+    }
+
+    //adding connection between next rooms in permutation array
+    for (int i = 0; i < arraySize - 1; i++)
+    {
+        addConnection(rooms, permutation[i], permutation[i + 1]);
+    }
+    free(permutation);
+
+    //adding some more random connections
+    for (int i = 0; i < arraySize; i++)
+    {
+        int room1 = rand_r(&pid) % (arraySize);
+        int room2 = rand_r(&pid) % (arraySize);
+
+        while (room1 == room2 || listHasItem(rooms[room1]->connectedRooms, room2))
+        {
+            room2 = rand_r(&pid) % (arraySize);
+        }
+        addConnection(rooms, room1, room2);
     }
 }
-
-void generateRandomMap(Room **roomsPtr, int arraySize)
+void generateRandomMap(Room ***roomsPtr, int arraySize)
 {
-    Room **rooms = roomsPtr;
+    Room **rooms = createRooms(arraySize);
+
+    generateConnections(rooms, arraySize);
+
     int numberOfItems = 3 * arraySize / 2;
     srand(time(NULL));
     unsigned int pid = getpid();
@@ -65,6 +88,8 @@ void generateRandomMap(Room **roomsPtr, int arraySize)
         //jesli tak to idziemy dalej
     }
     free(destinationRooms);
+
+    *roomsPtr = rooms;
 }
 
 typedef struct routeArguments
@@ -119,32 +144,6 @@ void *findRoute(void *args)
     return result;
 }
 
-void generateConnections(Room **rooms, int arraySize)
-{
-    srand(time(NULL));
-    unsigned int pid = getpid();
-    int rand = rand_r(&pid) % (arraySize);
-
-    int *permutation = (int *)calloc(sizeof(int), arraySize);
-    for (int i = 0; i < arraySize; i++)
-    {
-        permutation[rand] = i;
-        rand = rand_r(&pid) % (arraySize);
-    }
-    free(permutation);
-}
-
-void generateStuff()
-{
-    int arraySize = 5;
-    scanf("%d", &arraySize);
-    Room **rooms = createRooms(arraySize);
-
-    generateRandomMap(rooms, arraySize);
-    printRooms(rooms, arraySize);
-    freeRoomsArray(rooms, arraySize);
-}
-
 void gamerStuff()
 {
 
@@ -171,9 +170,9 @@ int gamerHasSlot(Gamer *gamer)
     return hasSlot(gamer->items);
 }
 
-int roomHasSlot(Room *room)
+int roomHasSlot(Room room)
 {
-    return hasSlot(room->items);
+    return hasSlot(room.items);
 }
 
 int findItemInItems(Item **items, int itemId)
@@ -188,7 +187,7 @@ int findItemInItems(Item **items, int itemId)
     // printf("there is no such item in this room\n");
     return -1;
 }
-void pickItem(Gamer *gamer, Room *room, int itemId)
+void pickUpItem(Gamer *gamer, Room *room, int itemId)
 {
     int slot = gamerHasSlot(gamer);
     if (slot == -1)
@@ -204,7 +203,7 @@ void pickItem(Gamer *gamer, Room *room, int itemId)
 
 int dropItem(Gamer *gamer, Room *room, int eqItemId)
 {
-    int slot = roomHasSlot(room);
+    int slot = roomHasSlot(*room);
     if (slot == -1)
     {
         printf("This room is full!\n");
@@ -239,7 +238,7 @@ void optionPickUp(Room **rooms, Gamer *gamer, int optionInt)
     {
         printf("you picked up the item\n");
         printItem(rooms[gamer->position]->items[slot]);
-        pickItem(gamer, rooms[gamer->position], slot);
+        pickUpItem(gamer, rooms[gamer->position], slot);
     }
     else
     {
@@ -301,6 +300,7 @@ void findRouteFromTo(int from, int to, Room **rooms, int size, int threadCount)
             shortestRoute->Count = result->route->Count;
             shortestRoute->head = result->route->head;
         }
+        freeList(result->route);
         free(result);
     }
     if (!found)
@@ -314,7 +314,7 @@ void findRouteFromTo(int from, int to, Room **rooms, int size, int threadCount)
         printRoute(shortestRoute);
     }
     free(tids);
-    free(shortestRoute);
+    freeList(shortestRoute);
 }
 void optionFindPath(Room **rooms, int size, Gamer *gamer, int threadCount, int to)
 {
@@ -322,24 +322,31 @@ void optionFindPath(Room **rooms, int size, Gamer *gamer, int threadCount, int t
 }
 void game()
 {
-    int n;
-    const char *path = "save2.save";
+    const char *path = "save3.save";
     // scanf("%d", &n);
     Room **rooms;
-    rooms = readSaveFile(path, &n);
+    Gamer *gamer;
+    int roomsArraySize;
+    readSaveFile(&rooms, &gamer, path, &roomsArraySize);
 
     if (!rooms)
     {
-        ERR("bad read");
+        ERR("bad rooms read");
     }
-    // findRouteFromTo(1, 4, vertices, 10);
+    if (!gamer)
+    {
+        ERR("bad gamer read");
+    }
+    puts("=====gamer=====");
+    printGamer(gamer);
+    puts("=====rooms=====");
+    printRooms(rooms, roomsArraySize);
 
-    generateRandomMap(rooms, n);
-    srand(time(NULL));
-    int startPosition = rand() % n;
-    Gamer *gamer = newGamer(startPosition);
+    // generateRandomMap(&rooms, n);
+    // srand(time(NULL));
+    // int startPosition = rand() % n;
     printf("welcome\n");
-    printRoom(rooms[gamer->position]);
+    printRoom(*rooms[gamer->position]);
     printf("\n");
 
     const char *moveto = "move-to";
@@ -359,7 +366,8 @@ void game()
 
         if (strcmp("quit", option) == 0)
         {
-            freeRoomsArray(rooms, n);
+            freeRoomsArray(rooms, roomsArraySize);
+            // free(rooms);
             freeGamer(gamer);
             break;
         }
@@ -383,13 +391,13 @@ void game()
             int optionInt2;
             scanf("%d", &optionInt);
             scanf("%d", &optionInt2);
-            optionFindPath(rooms, n, gamer, optionInt, optionInt2);
+            optionFindPath(rooms, roomsArraySize, gamer, optionInt, optionInt2);
         }
         else if (strcmp(save, option) == 0)
         {
             char savepath[MAX_PATH];
             scanf("%s", savepath);
-            writeSaveFile(rooms, n, savepath);
+            writeSaveFile(rooms, gamer, roomsArraySize, savepath);
         }
         else if (strcmp("list-me", option) == 0)
         {
@@ -397,7 +405,7 @@ void game()
         }
         else if (strcmp("list-room", option) == 0)
         {
-            printRoom(rooms[gamer->position]);
+            printRoom(*rooms[gamer->position]);
         }
         else
         {
@@ -416,54 +424,46 @@ void game()
 }
 int main(int argc, char *argv[])
 {
+    char c;
+    char savepath[MAX_PATH] = "";
+    while ((c = getopt(argc, argv, "b:")) != -1)
+    {
+        switch (c)
+        {
+        case 'b':
+            // printf("%s\n", optarg);
+            strcpy(savepath, optarg);
+            break;
+        case ':':
+            fprintf(stderr,
+                    "Option -%c requires an operand\n", optopt);
+            break;
+        case '?':
+            fprintf(stderr,
+                    "Unrecognized option: '-%c'\n", optopt);
+            break;
+        }
+    }
+
+    const char *autoSaveEnv = "GAME_AUTOSAVE";
+    if (strlen(savepath) > 0)
+    {
+        printf("%s\n", savepath);
+        char env[2 * MAX_PATH];
+        sprintf(env, "%s=%s", autoSaveEnv, savepath);
+        printf("%s\n", env);
+        if (putenv(env))
+        {
+            ERR("putenv");
+        }
+        char *env2 = getenv(autoSaveEnv);
+        printf("%s\n", env2);
+    }
     //generateStuff();
     // saveStuff();
-    game();
+    // game();
 
     // gamerStuff();
     // free(rooms);
     return 0;
-}
-
-void saveStuff()
-{
-
-    int n;
-    const char *path = "save2.save";
-    // scanf("%d", &n);
-    Room **vertices;
-    vertices = readSaveFile(path, &n);
-
-    if (!vertices)
-    {
-        ERR("bad read");
-    }
-    // findRouteFromTo(1, 4, vertices, 10);
-
-    generateRandomMap(vertices, n);
-    srand(time(NULL));
-    int startPosition = rand() % n;
-    Gamer *gamer = newGamer(startPosition);
-    printGamer(gamer);
-    printRoom(vertices[gamer->position]);
-
-    // int itemIndex = findItemInItems(vertices[gamer->position], 3);
-    int itemIndex = 0;
-    pickItem(gamer, vertices[gamer->position], itemIndex);
-
-    printf("-------\n");
-    printGamer(gamer);
-    printRoom(vertices[gamer->position]);
-
-    int gamerItemIndex = 0;
-    dropItem(gamer, vertices[gamer->position], gamerItemIndex);
-
-    printf("-------\n");
-    printGamer(gamer);
-    printRoom(vertices[gamer->position]);
-
-    const char *path2 = "save.save";
-    writeSaveFile(vertices, n, path2);
-
-    freeRoomsArray(vertices, n);
 }

@@ -1,6 +1,7 @@
 #include "list.h"
 #include <string.h>
 #define ITEMS_IN_ROOM 2
+#define MAX_STRING_LENGTH 1024
 
 typedef struct Item
 {
@@ -57,15 +58,6 @@ Item *newItem(int itemId, int destinationRoomId)
     return item;
 }
 
-Room **createRooms(int size)
-{
-    Room **rooms = (Room **)malloc(sizeof(Room *) * size);
-    if (!rooms)
-    {
-        ERR("malloc");
-    }
-    return rooms;
-}
 Room *newRoom(int roomId)
 {
     Room *room = (Room *)malloc(sizeof(Room));
@@ -85,6 +77,19 @@ Room *newRoom(int roomId)
     return room;
 }
 
+Room **createRooms(int size)
+{
+    Room **rooms = (Room **)malloc(sizeof(*rooms) * size);
+    if (!rooms)
+    {
+        ERR("malloc");
+    }
+    for (int i = 0; i < size; i++)
+    {
+        rooms[i] = newRoom(i);
+    }
+    return rooms;
+}
 void printItem(Item *item)
 {
     if (item)
@@ -140,18 +145,19 @@ void freeRoom(Room *room)
             freeItem(room->items[i]);
     }
     // z tym jest "double free or corruption (out)"
-    // free(room);
+    free(room);
 }
 
 void freeRoomsArray(Room **rooms, int size)
 {
+    // free(rooms);
     for (int i = 0; i < size; i++)
     {
         if (rooms[i])
             freeRoom(rooms[i]);
     }
     // z tym jest "double free or corruption (out)"
-    // free(rooms);
+    free(rooms);
 }
 
 off_t fsize(const char *filename)
@@ -170,56 +176,98 @@ void parseLine(char *line, List *list)
     char *token = strtok_r(line, " ", &saveptr);
     while (token != NULL)
     {
-
         int roomNo = atoi(token);
         addIntsToList2(list, roomNo);
         token = strtok_r(NULL, " ", &saveptr);
     }
 }
 
-Room **readSaveFile(const char *path, int *sizeOfArray)
+void printRoom(Room room)
 {
-    int filesize = fsize(path);
-    char *buff = (char *)malloc(sizeof(char) * filesize);
-    if (!buff)
-        ERR("malloc");
-
-    int fd;
-    if ((fd = open(path, O_RDONLY)) < 0)
-        ERR("open");
-
-    //zmienic na bulk_read/obrone przed sygnalami
-    if (read(fd, buff, filesize) < 0)
+    printf("room number %d:\n", room.roomId);
+    printf("list: \n");
+    printIntList(room.connectedRooms);
+    printf("items: \n");
+    for (int j = 0; j < ITEMS_IN_ROOM; j++)
     {
-        ERR("read");
+        printItem(room.items[j]);
     }
-
-    char *saveptr;
-    char *token = strtok_r(buff, "\n", &saveptr);
-
-    *sizeOfArray = atoi(token);
-    int number = 0;
-    Room **rooms = createRooms(number);
-
-    token = strtok_r(NULL, ":", &saveptr);
-    while (token != NULL)
-    {
-
-        number = atoi(token);
-        rooms[number] = newRoom(number);
-
-        char *token2 = strtok_r(NULL, "\n", &saveptr);
-        parseLine(token2, rooms[number]->connectedRooms);
-
-        token = strtok_r(NULL, ":", &saveptr);
-    }
-    free(buff);
-    close(fd);
-
-    return rooms;
 }
 
-void writeSaveFile(Room **rooms, int size, const char *path)
+void printRooms(Room *rooms[], int arraySize)
+{
+    for (int i = 0; i < arraySize; i++)
+    {
+        printRoom(*rooms[i]);
+    }
+}
+
+void readItemsFromFile(FILE *infile, Item *items[ITEMS_IN_ROOM])
+{
+    int itemId = -1, destinationId = -1;
+    for (int j = 0; j < ITEMS_IN_ROOM; j++)
+    {
+        fscanf(infile, "(%d,%d)", &itemId, &destinationId);
+        if (itemId > -1 && destinationId > -1)
+        {
+            items[j] = newItem(itemId, destinationId);
+        }
+        else
+        {
+            items[j] = NULL;
+        }
+    }
+}
+void readSaveFile(Room ***roomsPtr, Gamer **gamerPtr, const char *path, int *sizeOfArray)
+{
+    FILE *infile;
+    infile = fopen(path, "r");
+    if (infile == NULL)
+    {
+        ERR("fopen");
+    }
+    int roomNo, roomId, arraySize;
+    fscanf(infile, "%d", &arraySize);
+
+    Room **rooms = createRooms(arraySize);
+
+    for (int i = 0; i < arraySize; i++)
+    {
+        fscanf(infile, "%d:", &roomNo);
+        readItemsFromFile(infile, rooms[roomNo]->items);
+
+        while (fscanf(infile, ", %d", &roomId) > 0)
+        {
+            addIntsToList2(rooms[roomNo]->connectedRooms, roomId);
+        }
+    }
+    int gamerPosition;
+    fscanf(infile, "%d::", &gamerPosition);
+    Gamer *gamer = newGamer(gamerPosition);
+    readItemsFromFile(infile, gamer->items);
+
+    fclose(infile);
+    *roomsPtr = rooms;
+    *gamerPtr = gamer;
+    *sizeOfArray = arraySize;
+}
+
+void writeItemsToFile(FILE *outfile, Item *items[ITEMS_IN_ROOM])
+{
+    for (int j = 0; j < ITEMS_IN_ROOM; j++)
+    {
+        if (items[j])
+        {
+            fprintf(outfile, "(%d,%d)", items[j]->itemId, items[j]->destinationRoomId);
+        }
+        else
+        {
+            fprintf(outfile, "(%d,%d)", -1, -1);
+        }
+    }
+}
+
+void writeSaveFile(Room **rooms, Gamer *gamer, int size, const char *path)
 {
     FILE *outfile;
 
@@ -232,16 +280,23 @@ void writeSaveFile(Room **rooms, int size, const char *path)
     fprintf(outfile, "%d\n", size);
     for (int i = 0; i < size; i++)
     {
-        fprintf(outfile, "%d: ", i);
+
+        fprintf(outfile, "%d:", i);
+
+        writeItemsToFile(outfile, rooms[i]->items);
+
         Node *p = rooms[i]->connectedRooms->head;
         while (p)
         {
             Node *tmp = p;
             p = p->next;
-            fprintf(outfile, "%d ", *(int *)(tmp->data));
+            fprintf(outfile, ", %d", *(int *)(tmp->data));
         }
         fprintf(outfile, "\n");
     }
+
+    fprintf(outfile, "%d::", gamer->position);
+    writeItemsToFile(outfile, gamer->items);
 
     // close file
     fclose(outfile);
