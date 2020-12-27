@@ -7,7 +7,7 @@
 echo
 
 # Compile everything that is needed
-
+mkdir -p build
 make -C build -f ../Makefile
 
 

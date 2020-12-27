@@ -1,13 +1,22 @@
 # sop-project
 
-# installation
+## installation
 
 to start playing run these commands
-chmod u+x build.sh;
-./build.sh
-./home
 
-# commands
+### prerequisites
+
+`chmod u+x build.sh`
+
+### compilation
+
+`./build.sh`
+
+### play
+
+`build/sop_game`
+
+### commands
 
 list-me
 prints where you are and what are your items
