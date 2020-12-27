@@ -1,6 +1,6 @@
 #include "list.h"
 
-Node *newNode(void *data)
+Node *newNode(int data)
 {
     Node *node = (Node *)malloc(sizeof(Node));
     if (!node)
@@ -17,7 +17,7 @@ int listHasItem(List *list, int item)
     Node *p = list->head;
     while (p)
     {
-        if (*(int *)(p->data) == item)
+        if ((p->data) == item)
         {
             return 1;
         }
@@ -28,12 +28,12 @@ int listHasItem(List *list, int item)
 
 void printIntNode(Node *node)
 {
-    printf("%d\n", *(int *)(node->data));
+    printf("%d\n", (node->data));
 }
 
 void printRouteNode(Node *node)
 {
-    printf("%d", *(int *)(node->data));
+    printf("%d", (node->data));
     if (node && node->next)
     {
         printf(" -> ");
@@ -46,7 +46,7 @@ void printRouteNode(Node *node)
 
 void freeNode(Node *node)
 {
-    free(node->data);
+    // free(node->data);
     free(node);
 }
 
@@ -98,22 +98,26 @@ void freeList(List *list)
 
 void addToList(List *list, Node *node)
 {
-    if (!(list->head))
-    {
-        list->head = node;
-    }
-    else
+    if (list->head)
     {
         node->next = list->head;
-        list->head = node;
     }
+    list->head = node;
     list->Count++;
 }
 
 void addIntItemToList(List *list, int value)
 {
-    int *data = (int *)malloc(sizeof(int));
-    *data = value;
-    Node *node = newNode(data);
+    Node *node = newNode(value);
     addToList(list, node);
+}
+
+void copyList(List *from, List *to)
+{
+    Node *p = from->head;
+    while (p)
+    {
+        addIntItemToList(to, p->data);
+        p = p->next;
+    }
 }

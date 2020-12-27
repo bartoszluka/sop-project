@@ -88,7 +88,7 @@ void writeSaveFile(Room **rooms, Gamer *gamer, int size, const char *path)
         {
             Node *tmp = p;
             p = p->next;
-            fprintf(outfile, ", %d", *(int *)(tmp->data));
+            fprintf(outfile, ", %d", (tmp->data));
         }
         fprintf(outfile, "\n");
     }

@@ -38,7 +38,7 @@ DEPS = $(OBJS:.o=.d)
 CC = gcc
 
 # Set compiler flags
-CFLAGS= -std=gnu99 -Wall -I -ggdb -O0 $(SOURCES)
+CFLAGS = -std=gnu99 -Wall -I -ggdb -O0 $(SOURCES)
 # LDLIBS = -pthread -lm
 LDLIBS = -lpthread -lm
 # OS specific part
@@ -79,7 +79,7 @@ all: directories $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(HIDE)echo Linking $@
-	$(HIDE)$(CC) $(OBJS) -o $(TARGET) $(LDLIBS)
+	$(HIDE)$(CC) $(OBJS) -ggdb -o $(TARGET) $(LDLIBS)
 
 # Include dependencies
 -include $(DEPS)

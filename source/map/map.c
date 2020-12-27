@@ -91,6 +91,9 @@ void generateRandomMap(Room ***roomsPtr, int arraySize)
 void *findRoute(void *args)
 {
     routeArguments *connection = (routeArguments *)args;
+
+    printf("u %d\nv %d\n", connection->u, connection->v);
+
     int iterations = 0;
     int currentRoom = connection->u;
     routeResult *result = (routeResult *)malloc(sizeof(routeResult));
@@ -102,10 +105,11 @@ void *findRoute(void *args)
     result->route = newList();
     addIntItemToList(result->route, currentRoom);
 
+    printRoute(result->route);
+
     while (iterations < MAX_NUMBER_OF_ITERATIONS &&
            currentRoom != connection->v)
     {
-
         Node *p = connection->rooms[currentRoom]->connectedRooms->head;
         int count = connection->rooms[currentRoom]->connectedRooms->Count;
         int r = rand_r(&connection->seed);
@@ -114,7 +118,7 @@ void *findRoute(void *args)
         {
             p = p->next;
         }
-        currentRoom = *(int *)(p->data);
+        currentRoom = (p->data);
 
         addIntItemToList(result->route, currentRoom);
         iterations++;
@@ -136,8 +140,8 @@ void findRouteFromTo(int from, int to, Room **rooms, int size, int threadCount)
         printf("room %d does not exist\n", to);
         return;
     }
-    args.u = to;
-    args.v = from;
+    args.u = from;
+    args.v = to;
     args.seed = rand();
     int numberOfWorkers = threadCount;
     pthread_t *tids = (pthread_t *)malloc(sizeof(pthread_t) * numberOfWorkers);
@@ -147,7 +151,7 @@ void findRouteFromTo(int from, int to, Room **rooms, int size, int threadCount)
         pthread_create(&tids[i], NULL, findRoute, &args);
     }
     int found = 0;
-    List *shortestRoute = newList();
+    List *shortestRoute = NULL;
     int minDist = 1000;
     for (int i = 0; i < numberOfWorkers; i++)
     {
@@ -158,8 +162,12 @@ void findRouteFromTo(int from, int to, Room **rooms, int size, int threadCount)
         if (result->exists && result->route->Count < minDist)
         {
             minDist = result->route->Count;
-            shortestRoute->Count = result->route->Count;
-            shortestRoute->head = result->route->head;
+            if (shortestRoute)
+            {
+                freeList(shortestRoute);
+            }
+            shortestRoute = newList();
+            copyList(result->route, shortestRoute);
         }
         freeList(result->route);
         free(result);
@@ -173,7 +181,7 @@ void findRouteFromTo(int from, int to, Room **rooms, int size, int threadCount)
         // printf("route from %d to %d exists\n", from, to);
         // printf("its length is %d\n", shortestRoute->Count);
         printRoute(shortestRoute);
+        freeList(shortestRoute);
     }
     free(tids);
-    freeList(shortestRoute);
 }

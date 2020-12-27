@@ -6,7 +6,7 @@
 #include <stdlib.h>
 typedef struct Node
 {
-    void *data;
+    int data;
     struct Node *next;
 } Node;
 
@@ -16,7 +16,7 @@ typedef struct List
     int Count;
 } List;
 
-Node *newNode(void *data);
+Node *newNode(int data);
 
 int listHasItem(List *list, int item);
 
@@ -39,5 +39,7 @@ void freeList(List *list);
 void addToList(List *list, Node *node);
 
 void addIntItemToList(List *list, int value);
+
+void copyList(List *from, List *to);
 
 #endif //LIST_H
