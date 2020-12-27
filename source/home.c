@@ -5,26 +5,6 @@
 #define MAX_PATH 100
 
 
-void gamerStuff()
-{
-
-    Gamer *gamer = newGamer(0);
-    gamer->items[0] = newItem(1, 2);
-    gamer->items[1] = newItem(3, 4);
-    printGamer(gamer);
-    freeGamer(gamer);
-}
-int hasSlot(Item **items)
-{
-    for (int i = 0; i < ITEMS_IN_ROOM; i++)
-    {
-        if (!items[i])
-        {
-            return i;
-        }
-    }
-    return -1;
-}
 
 
 int gamerHasSlot(Gamer *gamer)

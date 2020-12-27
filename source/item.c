@@ -41,3 +41,15 @@ void freeItem(Item *item)
 {
     free(item);
 }
+
+int hasSlot(Item *items[ITEMS_IN_ROOM])
+{
+    for (int i = 0; i < ITEMS_IN_ROOM; i++)
+    {
+        if (!items[i])
+        {
+            return i;
+        }
+    }
+    return -1;
+}
