@@ -1,48 +1,6 @@
 #include "item.h"
 #include "room.h"
 
-typedef struct Gamer
-{
-    int position;
-    Item *items[ITEMS_IN_ROOM];
-} Gamer;
-
-Gamer *newGamer(int position)
-{
-    Gamer *gamer = (Gamer *)malloc(sizeof(Gamer));
-    if (!gamer)
-    {
-        ERR("malloc");
-    }
-    gamer->position = position;
-    for (int i = 0; i < ITEMS_IN_ROOM; i++)
-    {
-        gamer->items[i] = NULL;
-    }
-    return gamer;
-}
-void freeGamer(Gamer *gamer)
-{
-    for (int i = 0; i < ITEMS_IN_ROOM; i++)
-    {
-        if (gamer->items[i])
-            free(gamer->items[i]);
-    }
-    free(gamer);
-}
-
-void printGamer(Gamer *gamer)
-{
-    if (!gamer)
-    {
-        printf("gamer is NULL\n");
-        return;
-    }
-    printf("you are in room %d\n", gamer->position);
-    printf("your items are:\n");
-    printAllItems(gamer->items);
-}
-
 void readItemsFromFile(FILE *infile, Item *items[ITEMS_IN_ROOM])
 {
     int itemId = -1, destinationId = -1;

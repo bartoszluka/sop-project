@@ -26,6 +26,7 @@ int hasSlot(Item **items)
     return -1;
 }
 
+
 int gamerHasSlot(Gamer *gamer)
 {
     return hasSlot(gamer->items);
