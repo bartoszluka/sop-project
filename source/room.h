@@ -1,7 +1,6 @@
 #include "list.h"
 #include "item.h"
 #include <string.h>
-#define ITEMS_IN_ROOM 2
 
 // #define MAX_STRING_LENGTH 1024
 

@@ -1,12 +1,6 @@
 #include "list.h"
 
 
-typedef struct Item
-{
-    int itemId;
-    int destinationRoomId;
-} Item;
-
 typedef struct Gamer
 {
     int position;
@@ -37,47 +31,7 @@ void freeGamer(Gamer *gamer)
     free(gamer);
 }
 
-Item *newItem(int itemId, int destinationRoomId)
-{
-    Item *item = (Item *)malloc(sizeof(Item));
-    if (!item)
-    {
-        ERR("malloc");
-    }
-    item->itemId = itemId;
-    item->destinationRoomId = destinationRoomId;
-    return item;
-}
 
-void printItem(Item *item)
-{
-    if (item)
-    {
-        printf("id: %d ", item->itemId);
-        printf("dest: %d\n", item->destinationRoomId);
-    }
-    else
-    {
-        // printf("item is NULL\n");
-    }
-}
-
-void printAllItems(Item **items)
-{
-    int count = 0;
-    for (int i = 0; i < ITEMS_IN_ROOM; i++)
-    {
-        if (items[i])
-        {
-            count++;
-        }
-        printItem(items[i]);
-    }
-    if (count == 0)
-    {
-        printf("you have no items\n");
-    }
-}
 void printGamer(Gamer *gamer)
 {
     if (!gamer)
@@ -88,32 +42,6 @@ void printGamer(Gamer *gamer)
     printf("you are in room %d\n", gamer->position);
     printf("your items are:\n");
     printAllItems(gamer->items);
-}
-
-void freeItem(Item *item)
-{
-    free(item);
-}
-off_t fsize(const char *filename)
-{
-    struct stat st;
-
-    if (stat(filename, &st) == 0)
-        return st.st_size;
-
-    return -1;
-}
-
-void parseLine(char *line, List *list)
-{
-    char *saveptr;
-    char *token = strtok_r(line, " ", &saveptr);
-    while (token != NULL)
-    {
-        int roomNo = atoi(token);
-        addIntsToList2(list, roomNo);
-        token = strtok_r(NULL, " ", &saveptr);
-    }
 }
 
 void readItemsFromFile(FILE *infile, Item *items[ITEMS_IN_ROOM])
