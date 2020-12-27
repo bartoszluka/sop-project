@@ -25,14 +25,16 @@ int listHasItem(List *list, int item)
     }
     return 0;
 }
+
 void printIntNode(Node *node)
 {
     printf("%d\n", *(int *)(node->data));
 }
+
 void printRouteNode(Node *node)
 {
     printf("%d", *(int *)(node->data));
-    if (node->next)
+    if (node && node->next)
     {
         printf(" -> ");
     }
@@ -47,6 +49,7 @@ void freeNode(Node *node)
     free(node->data);
     free(node);
 }
+
 void foreachNode(List *list, void (*doThis)(Node *))
 {
     Node *p = list->head;
@@ -92,6 +95,7 @@ void freeList(List *list)
     foreachNode(list, freeNode);
     free(list);
 }
+
 void addToList(List *list, Node *node)
 {
     if (!(list->head))

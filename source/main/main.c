@@ -111,6 +111,9 @@ void game()
 }
 int main(int argc, char *argv[])
 {
+    game();
+    return 0;
+
     char c;
     char savepath[MAX_PATH] = "";
     while ((c = getopt(argc, argv, "b:")) != -1)
@@ -148,7 +151,6 @@ int main(int argc, char *argv[])
     }
     //generateStuff();
     // saveStuff();
-    // game();
 
     // gamerStuff();
     // free(rooms);
