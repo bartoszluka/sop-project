@@ -1,7 +1,5 @@
 #include "list.h"
-#include <string.h>
-#define ITEMS_IN_ROOM 2
-#define MAX_STRING_LENGTH 1024
+
 
 typedef struct Item
 {
@@ -14,13 +12,6 @@ typedef struct Gamer
     int position;
     Item *items[ITEMS_IN_ROOM];
 } Gamer;
-
-typedef struct Room
-{
-    int roomId;
-    List *connectedRooms;
-    Item *items[ITEMS_IN_ROOM];
-} Room;
 
 Gamer *newGamer(int position)
 {
@@ -58,38 +49,6 @@ Item *newItem(int itemId, int destinationRoomId)
     return item;
 }
 
-Room *newRoom(int roomId)
-{
-    Room *room = (Room *)malloc(sizeof(Room));
-    if (!room)
-    {
-        ERR("malloc");
-    }
-
-    room->roomId = roomId;
-    room->connectedRooms = newList();
-
-    for (int i = 0; i < ITEMS_IN_ROOM; i++)
-    {
-        room->items[i] = NULL;
-    }
-
-    return room;
-}
-
-Room **createRooms(int size)
-{
-    Room **rooms = (Room **)malloc(sizeof(*rooms) * size);
-    if (!rooms)
-    {
-        ERR("malloc");
-    }
-    for (int i = 0; i < size; i++)
-    {
-        rooms[i] = newRoom(i);
-    }
-    return rooms;
-}
 void printItem(Item *item)
 {
     if (item)
@@ -135,31 +94,6 @@ void freeItem(Item *item)
 {
     free(item);
 }
-void freeRoom(Room *room)
-{
-    freeList(room->connectedRooms);
-
-    for (int i = 0; i < ITEMS_IN_ROOM; i++)
-    {
-        if (room->items[i])
-            freeItem(room->items[i]);
-    }
-    // z tym jest "double free or corruption (out)"
-    free(room);
-}
-
-void freeRoomsArray(Room **rooms, int size)
-{
-    // free(rooms);
-    for (int i = 0; i < size; i++)
-    {
-        if (rooms[i])
-            freeRoom(rooms[i]);
-    }
-    // z tym jest "double free or corruption (out)"
-    free(rooms);
-}
-
 off_t fsize(const char *filename)
 {
     struct stat st;
@@ -179,26 +113,6 @@ void parseLine(char *line, List *list)
         int roomNo = atoi(token);
         addIntsToList2(list, roomNo);
         token = strtok_r(NULL, " ", &saveptr);
-    }
-}
-
-void printRoom(Room room)
-{
-    printf("room number %d:\n", room.roomId);
-    printf("list: \n");
-    printIntList(room.connectedRooms);
-    printf("items: \n");
-    for (int j = 0; j < ITEMS_IN_ROOM; j++)
-    {
-        printItem(room.items[j]);
-    }
-}
-
-void printRooms(Room *rooms[], int arraySize)
-{
-    for (int i = 0; i < arraySize; i++)
-    {
-        printRoom(*rooms[i]);
     }
 }
 
