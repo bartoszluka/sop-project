@@ -57,13 +57,13 @@ void freeRoomsArray(Room **rooms, int size)
 }
 void printRoom(Room *room)
 {
-    printf("room number %d:\n", room.roomId);
+    printf("room number %d:\n", room->roomId);
     printf("list: \n");
-    printIntList(room.connectedRooms);
+    printIntList(room->connectedRooms);
     printf("items: \n");
     for (int j = 0; j < ITEMS_IN_ROOM; j++)
     {
-        printItem(room.items[j]);
+        printItem(room->items[j]);
     }
 }
 
@@ -73,4 +73,9 @@ void printRooms(Room *rooms[], int arraySize)
     {
         printRoom(rooms[i]);
     }
+}
+
+int roomHasSlot(Room room)
+{
+    return hasSlot(room.items);
 }

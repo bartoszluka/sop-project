@@ -1,8 +1,5 @@
-#include "list.h"
-#include "item.h"
-#include <string.h>
-
-// #define MAX_STRING_LENGTH 1024
+#include "../list/list.h"
+#include "../item/item.h"
 
 typedef struct Room
 {
@@ -22,3 +19,5 @@ void freeRoomsArray(Room *rooms[], int size);
 void printRoom(Room *room);
 
 void printRooms(Room *rooms[], int arraySize);
+
+int roomHasSlot(Room room);

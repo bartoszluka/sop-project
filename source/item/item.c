@@ -53,3 +53,16 @@ int hasSlot(Item *items[ITEMS_IN_ROOM])
     }
     return -1;
 }
+
+int findItemInItems(Item **items, int itemId)
+{
+    for (int i = 0; i < ITEMS_IN_ROOM; i++)
+    {
+        if (items[i] && items[i]->itemId == itemId)
+        {
+            return i;
+        }
+    }
+    // printf("there is no such item in this room\n");
+    return -1;
+}

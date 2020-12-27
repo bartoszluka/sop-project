@@ -1,5 +1,4 @@
-#include "item.h"
-#include "room.h"
+#include "save.h"
 
 void readItemsFromFile(FILE *infile, Item *items[ITEMS_IN_ROOM])
 {
@@ -17,6 +16,7 @@ void readItemsFromFile(FILE *infile, Item *items[ITEMS_IN_ROOM])
         }
     }
 }
+
 void readSaveFile(Room ***roomsPtr, Gamer **gamerPtr, const char *path, int *sizeOfArray)
 {
     FILE *infile;
@@ -65,7 +65,6 @@ void writeItemsToFile(FILE *outfile, Item *items[ITEMS_IN_ROOM])
         }
     }
 }
-
 void writeSaveFile(Room **rooms, Gamer *gamer, int size, const char *path)
 {
     FILE *outfile;

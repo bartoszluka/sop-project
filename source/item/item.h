@@ -1,5 +1,6 @@
 #ifndef ITEM_H_
 #define ITEM_H_
+
 #include "err.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -21,4 +22,6 @@ void freeItem(Item *item);
 
 int hasSlot(Item *items[ITEMS_IN_ROOM]);
 
-#endif
+int findItemInItems(Item **items, int itemId);
+
+#endif //ITEM_H_
