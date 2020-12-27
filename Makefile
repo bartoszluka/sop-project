@@ -9,7 +9,7 @@ SOURCEDIR := $(PROJDIR)/source
 BUILDDIR := $(PROJDIR)/build
 
 # Name of the final executable
-TARGET = room_game
+TARGET = sop_game
 
 # Decide whether the commands will be shwon or not
 VERBOSE = TRUE
