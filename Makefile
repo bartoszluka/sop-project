@@ -38,7 +38,8 @@ DEPS = $(OBJS:.o=.d)
 CC = gcc
 
 # Set compiler flags
-CFLAGS = -g -Wall -I $(SOURCES) -lpthread -lm
+CFLAGS= -std=gnu99 -Wall -I -ggdb -O0 $(SOURCES)
+LDLIBS = -lpthread -lm
 
 # OS specific part
 ifeq ($(OS),Windows_NT)
