@@ -1,6 +1,9 @@
 #ifndef MAP_H_
 #define MAP_H_
 #include "room.h"
+#include "item.h"
+
+#define MAX_NUMBER_OF_ITERATIONS 1000
 
 typedef struct routeArguments
 {
@@ -15,7 +18,6 @@ typedef struct routeResult
     List *route;
     int exists;
 } routeResult;
-
 
 void addConnection(Room **rooms, int room1, int room2);
 

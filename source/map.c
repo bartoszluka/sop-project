@@ -1,7 +1,4 @@
 #include "map.h"
-#include "room.h"
-#include "item.h"
-#define MAX_NUMBER_OF_ITERATIONS 1000
 
 void addConnection(Room **rooms, int room1, int room2)
 {
