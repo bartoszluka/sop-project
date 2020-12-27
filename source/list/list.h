@@ -1,9 +1,9 @@
 #ifndef LIST_H_
 #define LIST_H_
 
+#include "../err.h"
 #include <stdio.h>
 #include <stdlib.h>
-
 typedef struct Node
 {
     void *data;
@@ -40,4 +40,4 @@ void addToList(List *list, Node *node);
 
 void addIntItemToList(List *list, int value);
 
-#endif
+#endif //LIST_H

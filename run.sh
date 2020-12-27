@@ -1,1 +1,0 @@
-echo > save.txt; ./home; cat save.txt

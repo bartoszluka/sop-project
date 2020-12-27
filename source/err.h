@@ -7,4 +7,4 @@
                      perror(source), kill(0, SIGKILL),               \
                      exit(EXIT_FAILURE))
 
-#endif
+#endif // ERR_H_

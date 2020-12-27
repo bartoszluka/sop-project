@@ -4,6 +4,7 @@
 #include "../room/room.h"
 #include "../item/item.h"
 #include "../gamer/gamer.h"
+#include "../err.h"
 
 void readItemsFromFile(FILE *infile, Item *items[ITEMS_IN_ROOM]);
 

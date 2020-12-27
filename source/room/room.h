@@ -1,5 +1,9 @@
+#ifndef ROOM_H_
+#define ROOM_H_
+
 #include "../list/list.h"
 #include "../item/item.h"
+#include "../err.h"
 
 typedef struct Room
 {
@@ -21,3 +25,5 @@ void printRoom(Room *room);
 void printRooms(Room *rooms[], int arraySize);
 
 int roomHasSlot(Room room);
+
+#endif //ROOM_H_

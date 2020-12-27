@@ -1,7 +1,7 @@
 #ifndef ITEM_H_
 #define ITEM_H_
 
-#include "err.h"
+#include "../err.h"
 #include <stdlib.h>
 #include <stdio.h>
 #define ITEMS_IN_ROOM 2

@@ -6,16 +6,16 @@
 # Set project directory one level above of Makefile directory. $(CURDIR) is a GNU make variable containing the path to the current working directory
 PROJDIR := $(realpath $(CURDIR)/..)
 SOURCEDIR := $(PROJDIR)/source
-BUILDDIR := $(PROJDIR)/Build
+BUILDDIR := $(PROJDIR)/build
 
 # Name of the final executable
-TARGET = app
+TARGET = room_game
 
 # Decide whether the commands will be shwon or not
 VERBOSE = TRUE
 
 # Create the list of directories
-DIRS = list main bstree graph queue stack
+DIRS = main list game gamer item map room save
 SOURCEDIRS = $(foreach dir, $(DIRS), $(addprefix $(SOURCEDIR)/, $(dir)))
 TARGETDIRS = $(foreach dir, $(DIRS), $(addprefix $(BUILDDIR)/, $(dir)))
 
@@ -38,7 +38,7 @@ DEPS = $(OBJS:.o=.d)
 CC = gcc
 
 # Set compiler flags
-CFLAGS = -g -Wall -I $(SOURCES)
+CFLAGS = -g -Wall -I $(SOURCES) -lpthread -lm
 
 # OS specific part
 ifeq ($(OS),Windows_NT)

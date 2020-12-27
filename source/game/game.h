@@ -5,6 +5,8 @@
 #include "../gamer/gamer.h"
 #include "../item/item.h"
 #include "../map/map.h"
+#include "../save/save.h"
+#include "../err.h"
 
 void pickUpItem(Gamer *gamer, Room *room, int itemId);
 
@@ -17,4 +19,5 @@ void optionPickUp(Room **rooms, Gamer *gamer, int optionInt);
 void optionDrop(Room **rooms, Gamer *gamer, int optionInt);
 
 void optionFindPath(Room **rooms, int size, Gamer *gamer, int threadCount, int to);
-#endif
+
+#endif //GAME_H_

@@ -1,7 +1,7 @@
 #ifndef GAMER_H_
 #define GAMER_H_
 
-#include "err.h"
+#include "../err.h"
 #include "../item/item.h"
 
 typedef struct Gamer

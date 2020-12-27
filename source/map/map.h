@@ -1,8 +1,12 @@
 #ifndef MAP_H_
 #define MAP_H_
+
+#include <pthread.h>
+#include <unistd.h>
+
 #include "../room/room.h"
 #include "../item/item.h"
-#include <pthread.h>
+#include "../err.h"
 
 #define MAX_NUMBER_OF_ITERATIONS 1000
 
