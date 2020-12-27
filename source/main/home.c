@@ -2,7 +2,7 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <pthread.h>
+#include <unistd.h>
 
 #define MAX_PATH 100
 
@@ -32,7 +32,7 @@ void game()
     // srand(time(NULL));
     // int startPosition = rand() % n;
     printf("welcome\n");
-    printRoom(*rooms[gamer->position]);
+    printRoom(rooms[gamer->position]);
     printf("\n");
 
     const char *moveto = "move-to";
@@ -91,7 +91,7 @@ void game()
         }
         else if (strcmp("list-room", option) == 0)
         {
-            printRoom(*rooms[gamer->position]);
+            printRoom(rooms[gamer->position]);
         }
         else
         {

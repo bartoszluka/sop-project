@@ -2,6 +2,7 @@
 #define MAP_H_
 #include "../room/room.h"
 #include "../item/item.h"
+#include <pthread.h>
 
 #define MAX_NUMBER_OF_ITERATIONS 1000
 
