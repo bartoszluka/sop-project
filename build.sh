@@ -7,7 +7,9 @@
 echo
 
 # Compile everything that is needed
-make -C Build -f ../Makefile
+
+make -C build -f ../Makefile
+
 
 # Run build
 #./app

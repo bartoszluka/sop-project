@@ -38,7 +38,7 @@ DEPS = $(OBJS:.o=.d)
 CC = gcc
 
 # Set compiler flags
-CFLAGS= -std=gnu99 -Wall -I $(SOURCES)
+CFLAGS= -std=gnu99 -Wall -I -ggdb -O0 $(SOURCES)
 # LDLIBS = -pthread -lm
 LDLIBS = -lpthread -lm
 # OS specific part

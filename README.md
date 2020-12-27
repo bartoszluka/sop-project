@@ -3,8 +3,8 @@
 # installation
 
 to start playing run these commands
-
-make home
+chmod u+x build.sh;
+./build.sh
 ./home
 
 # commands
