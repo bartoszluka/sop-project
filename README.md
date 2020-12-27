@@ -3,6 +3,21 @@
 ## installation
 
 to start playing run these commands
+<<<<<<< HEAD
+=======
+
+# prerequisites
+
+`chmod u+x build.sh`
+
+# compilation
+
+`./build.sh`
+
+# play
+
+`build/sop_game`
+>>>>>>> 4aa054243f62f4265d041d44639e627a9ecc7e59
 
 ### prerequisites
 
