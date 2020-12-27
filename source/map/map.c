@@ -178,8 +178,6 @@ void findRouteFromTo(int from, int to, Room **rooms, int size, int threadCount)
     }
     else
     {
-        // printf("route from %d to %d exists\n", from, to);
-        // printf("its length is %d\n", shortestRoute->Count);
         printRoute(shortestRoute);
         freeList(shortestRoute);
     }
