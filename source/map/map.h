@@ -3,7 +3,7 @@
 
 #include <pthread.h>
 #include <unistd.h>
-
+#include <sys/time.h>
 #include "../room/room.h"
 #include "../item/item.h"
 #include "../err.h"
