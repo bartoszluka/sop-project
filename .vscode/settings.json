@@ -1,4 +1,7 @@
 {
   "cmake.configureOnOpen": true,
-  "files.enableTrash": true
+  "files.enableTrash": true,
+  "files.associations": {
+    "list": "c"
+  }
 }

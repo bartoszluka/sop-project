@@ -7,8 +7,8 @@
 
 void addConnection(Room **rooms, int room1, int room2)
 {
-    addIntsToList2(rooms[room1]->connectedRooms, room2);
-    addIntsToList2(rooms[room2]->connectedRooms, room1);
+    addIntItemToList(rooms[room1]->connectedRooms, room2);
+    addIntItemToList(rooms[room2]->connectedRooms, room1);
 }
 
 void generateConnections(Room **rooms, int arraySize)
@@ -118,7 +118,7 @@ void *findRoute(void *args)
     }
     result->exists = 0;
     result->route = newList();
-    addIntsToList2(result->route, currentRoom);
+    addIntItemToList(result->route, currentRoom);
 
     while (iterations < MAX_NUMBER_OF_ITERATIONS &&
            currentRoom != connection->v)
@@ -134,7 +134,7 @@ void *findRoute(void *args)
         }
         currentRoom = *(int *)(p->data);
 
-        addIntsToList2(result->route, currentRoom);
+        addIntItemToList(result->route, currentRoom);
         iterations++;
     }
     if (iterations < MAX_NUMBER_OF_ITERATIONS)

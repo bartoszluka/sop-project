@@ -2,8 +2,8 @@
 
 void addConnection(Room **rooms, int room1, int room2)
 {
-    addIntsToList2(rooms[room1]->connectedRooms, room2);
-    addIntsToList2(rooms[room2]->connectedRooms, room1);
+    addIntItemToList(rooms[room1]->connectedRooms, room2);
+    addIntItemToList(rooms[room2]->connectedRooms, room1);
 }
 
 void generateConnections(Room **rooms, int arraySize)

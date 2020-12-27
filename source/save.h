@@ -1,5 +1,5 @@
-#include "list.h"
-
+#include "item.h"
+#include "room.h"
 
 typedef struct Gamer
 {
@@ -30,7 +30,6 @@ void freeGamer(Gamer *gamer)
     }
     free(gamer);
 }
-
 
 void printGamer(Gamer *gamer)
 {
@@ -80,7 +79,7 @@ void readSaveFile(Room ***roomsPtr, Gamer **gamerPtr, const char *path, int *siz
 
         while (fscanf(infile, ", %d", &roomId) > 0)
         {
-            addIntsToList2(rooms[roomNo]->connectedRooms, roomId);
+            addIntItemToList(rooms[roomNo]->connectedRooms, roomId);
         }
     }
     int gamerPosition;

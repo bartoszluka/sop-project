@@ -1,14 +1,8 @@
-#include <unistd.h>
+#ifndef LIST_H_
+#define LIST_H_
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/wait.h>
-#include <sys/time.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <string.h>
-#include <time.h>
-#include <string.h>
 
 typedef struct Node
 {
@@ -16,146 +10,34 @@ typedef struct Node
     struct Node *next;
 } Node;
 
-Node *newNode(void *data)
-{
-    Node *node = (Node *)malloc(sizeof(Node));
-    if (!node)
-    {
-        ERR("malloc failed");
-    }
-    // node->itemId = itemId;
-    // node->destRoomId = destRoomId;
-    node->data = data;
-    node->next = NULL;
-    return node;
-}
-
 typedef struct List
 {
     Node *head;
     int Count;
 } List;
 
-void printNode(Node *node)
-{
-    // printf("item id = %d\n", node->itemId);
-    // printf("destination id = %d\n", node->destRoomId);
-}
+Node *newNode(void *data);
 
-int listHasItem(List *list, int item)
-{
-    Node *p = list->head;
-    while (p)
-    {
-        if (*(int *)(p->data) == item)
-        {
-            return 1;
-        }
-        p = p->next;
-    }
-    return 0;
-}
+int listHasItem(List *list, int item);
 
-void printIntNode(Node *node)
-{
-    printf("%d\n", *(int *)(node->data));
-}
+void printIntNode(Node *node);
 
-void printRouteNode(Node *node)
-{
-    printf("%d", *(int *)(node->data));
-    if (node->next)
-    {
-        printf(" -> ");
-    }
-    else
-    {
-        printf("\n");
-    }
-}
-void freeNode(Node *node)
-{
-    free(node->data);
-    free(node);
-}
+void printRouteNode(Node *node);
 
-void foreachNode(List *list, void (*doThis)(Node *))
-{
-    Node *p = list->head;
-    while (p)
-    {
-        Node *tmp = p;
-        p = p->next;
-        doThis(tmp);
-    }
-}
+void freeNode(Node *node);
 
-void printList(List *list)
-{
-    foreachNode(list, printNode);
-}
+void foreachNode(List *list, void (*doThis)(Node *));
 
-void printRoute(List *list)
-{
-    foreachNode(list, printRouteNode);
-}
+void printRoute(List *list);
 
-void printIntList(List *list)
-{
-    if (!list || !list->head)
-    {
-        printf("list is NULL\n");
-    }
-    else
-    {
-        // printf("count is %d\n", list->Count);
-        foreachNode(list, printIntNode);
-    }
-}
+void printIntList(List *list);
 
-List *newList()
-{
-    List *list = NULL;
-    list = (List *)malloc(sizeof(*list));
-    if (!list)
-    {
-        ERR("malloc failed");
-    }
-    list->head = NULL;
-    list->Count = 0;
-    return list;
-}
+List *newList();
 
-void freeList(List *list)
-{
-    foreachNode(list, freeNode);
-    free(list);
-}
+void freeList(List *list);
 
-void addToList(List *list, Node *node)
-{
-    if (!(list->head))
-    {
-        list->head = node;
-    }
-    else
-    {
-        node->next = list->head;
-        list->head = node;
-    }
-    list->Count++;
-}
+void addToList(List *list, Node *node);
 
-void addIntsToList(List *list, int itemId, int destRoomId)
-{
-    int *data = (int *)malloc(sizeof(int));
-    Node *node = newNode(data);
-    addToList(list, node);
-}
-void addIntsToList2(List *list, int value)
-{
-    int *data = (int *)malloc(sizeof(int));
-    *data = value;
-    Node *node = newNode(data);
-    addToList(list, node);
-}
+void addIntItemToList(List *list, int value);
+
+#endif
