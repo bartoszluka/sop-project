@@ -108,22 +108,44 @@ void sethandler(void (*f)(int), int sigNo)
     if (-1 == sigaction(sigNo, &action, NULL))
         ERR("sigaction");
 }
+volatile sig_atomic_t lastSignal = NOT_SAVED;
+
+void doNothing(int signal)
+{
+    // puts("dostałem sygnał");
+}
+
+void alreadySaved()
+{
+    lastSignal = ALREADY_SAVED;
+}
+void notSaved()
+{
+    lastSignal = NOT_SAVED;
+}
 
 void *autoSave(void *args)
 {
     autoSaveArgs *saveArgs = (autoSaveArgs *)args;
-    // for (int i = 0; i < 5; i++)
     while (1)
     {
         int unslept = sleep(AUTOSAVE_INTERVAL);
         if (unslept)
         {
             printf("unslept is %d\n", unslept);
-            break;
+            if (lastSignal == ALREADY_SAVED)
+            {
+                notSaved();
+                continue;
+            }
+            else
+            {
+                break;
+            }
         }
+        puts("saving...");
         writeSaveFile(*saveArgs->rooms, *saveArgs->gamer, saveArgs->size, saveArgs->path);
         puts("saved");
     }
-    free(saveArgs->work);
     return NULL;
 }

@@ -5,7 +5,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <string.h>
 
 #define MAX_PATH 100
 
@@ -25,34 +24,24 @@ void game()
     {
         ERR("bad gamer read");
     }
-    int *autoSaveWork = (int *)malloc(sizeof(int));
-    if (!autoSaveWork)
-    {
-        ERR("malloc");
-    }
-    *autoSaveWork = 1;
+
+
+
     autoSaveArgs saveArgs = {
         .rooms = &rooms,
         .gamer = &gamer,
         .size = roomsArraySize,
         .path = "autosave.txt",
-        .work = autoSaveWork,
     };
+
+    sethandler(doNothing, SIGUSR2);
+
     pthread_t autosaveTid;
-
-    sigset_t oldMask, newMask;
-    sigemptyset(&newMask);
-    sigaddset(&newMask, SIGUSR2);
-    // sigaddset(&newMask, SIGQUIT);
-    if (pthread_sigmask(SIG_BLOCK, &newMask, &oldMask))
-        ERR("SIG_BLOCK error");
-
     pthread_create(&autosaveTid, NULL, autoSave, &saveArgs);
-
-    puts("=====gamer=====");
-    printGamer(gamer);
-    puts("=====rooms=====");
-    printRooms(rooms, roomsArraySize);
+    // puts("=====gamer=====");
+    // printGamer(gamer);
+    // puts("=====rooms=====");
+    // printRooms(rooms, roomsArraySize);
 
     // generateRandomMap(&rooms, n);
     // srand(time(NULL));
@@ -78,6 +67,8 @@ void game()
 
         if (strcmp("quit", option) == 0)
         {
+            pthread_kill(autosaveTid, SIGUSR2);
+            // kill(0, SIGUSR2);
             pthread_join(autosaveTid, NULL);
             freeRoomsArray(rooms, roomsArraySize);
             freeGamer(gamer);
@@ -110,7 +101,11 @@ void game()
         {
             char savepath[MAX_PATH];
             scanf("%s", savepath);
+            alreadySaved();
+            pthread_kill(autosaveTid, SIGUSR2);
+            puts("saving...");
             writeSaveFile(rooms, gamer, roomsArraySize, savepath);
+            puts("saved");
         }
         else if (strcmp(listme, option) == 0)
         {
