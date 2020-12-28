@@ -40,7 +40,9 @@ void freeRoom(Room *room)
     for (int i = 0; i < ITEMS_IN_ROOM; i++)
     {
         if (room->items[i])
+        {
             freeItem(room->items[i]);
+        }
     }
     free(room);
 }

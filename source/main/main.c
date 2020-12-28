@@ -26,12 +26,12 @@ void game()
     }
 
     int saved = AUTO_SAVED;
-
+    char *autosavePath = getenv("GAME_AUTOSAVE");
     autoSaveArgs saveArgs = {
         .rooms = &rooms,
         .gamer = &gamer,
         .size = roomsArraySize,
-        .path = "autosave.txt",
+        .path = autosavePath,
         .saved = &saved,
     };
 
@@ -132,52 +132,63 @@ void game()
         printf("\n");
     }
 }
+
+void setEnvVariable(char *savepath)
+{
+    const char *autoSaveEnv = "GAME_AUTOSAVE";
+    printf("%ld\n", strlen(savepath));
+    if (strlen(savepath) == 0)
+    {
+        strcpy(savepath, "$HOME/.game-autosave");
+    }
+    puts(savepath);
+    if (setenv(autoSaveEnv, savepath, 1))
+    {
+        ERR("setenv");
+    }
+}
+
 int main(int argc, char *argv[])
 {
-    mapFromDirTree("/etc", "newsave.txt");
-    return 0;
-    game();
+    // mapFromDirTree("/etc", "newsave.txt");
+    // return 0;
+    // game();
 
     char c;
     char savepath[MAX_PATH] = "";
-    while ((c = getopt(argc, argv, "b::")) != -1)
+    while ((c = getopt(argc, argv, ":b:")) != -1)
     {
         switch (c)
         {
         case 'b':
-            // printf("%s\n", optarg);
             if (optarg)
+            {
+                printf("%s\n", optarg);
                 strcpy(savepath, optarg);
+            }
             break;
         case ':':
-            fprintf(stderr,
-                    "Option -%c requires an operand\n", optopt);
+            switch (optopt)
+            {
+            case 'b':
+                // strcpy(savepath, optarg);
+                break;
+            default:
+                fprintf(stderr,
+                        "Option -%c requires an operand\n", optopt);
+                exit(EXIT_FAILURE);
+            }
             break;
         case '?':
             fprintf(stderr,
                     "Unrecognized option: '-%c'\n", optopt);
+            exit(EXIT_FAILURE);
             break;
         }
     }
 
-    const char *autoSaveEnv = "GAME_AUTOSAVE";
-    if (strlen(savepath) > 0)
-    {
-        printf("%s\n", savepath);
-        char env[2 * MAX_PATH];
-        sprintf(env, "%s=%s", autoSaveEnv, savepath);
-        printf("%s\n", env);
-        if (putenv(env))
-        {
-            ERR("putenv");
-        }
-        char *env2 = getenv(autoSaveEnv);
-        printf("%s\n", env2);
-    }
-    //generateStuff();
-    // saveStuff();
+    setEnvVariable(savepath);
+    // game();
 
-    // gamerStuff();
-    // free(rooms);
     return 0;
 }

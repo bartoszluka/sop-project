@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#define AUTOSAVE_INTERVAL 10
+#define AUTOSAVE_INTERVAL 2
 #define SAVED_BY_USER 2137
 #define AUTO_SAVED 2138
 

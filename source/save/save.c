@@ -68,7 +68,6 @@ void writeItemsToFile(FILE *outfile, Item *items[ITEMS_IN_ROOM])
 void writeSaveFile(Room **rooms, Gamer *gamer, int size, const char *path)
 {
     FILE *outfile;
-
     outfile = fopen(path, "w");
     if (outfile == NULL)
     {
@@ -133,6 +132,7 @@ void *autoSave(void *args)
             }
         }
         puts("saving...");
+        puts(saveArgs->path);
         writeSaveFile(*saveArgs->rooms, *saveArgs->gamer, saveArgs->size, saveArgs->path);
         puts("saved");
     }
