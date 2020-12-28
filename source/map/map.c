@@ -183,23 +183,47 @@ void findRouteFromTo(int from, int to, Room **rooms, int size, int threadCount)
 int dirs = 0;
 int parentId = 0;
 int levelOfParent = 0;
+int previousLevel = -1;
+int previousId = -1;
+List *idStack = NULL;
+List *lvlStack = NULL;
 
 int countFolders(const char *name, const struct stat *s, int type, struct FTW *f)
 {
-    if (type == FTW_DP)
+    if (type == FTW_D)
     {
-        if (f->level != levelOfParent)
+        printf("[id:%d, lvl:%d] %s", dirs, f->level, name);
+        if (f->level > previousLevel)
         {
-            levelOfParent = f->level;
-            parentId = dirs;
+            addIntItemToList(idStack, previousId);
+            addIntItemToList(lvlStack, previousLevel);
         }
-        else if (f->level < levelOfParent)
+        else if (f->level < previousLevel)
         {
+            removeFirstItemFromList(idStack);
+            removeFirstItemFromList(lvlStack);
         }
+        
+        printf(" - łączę %d i %d", dirs, firstItemFromList(idStack));
+        printf("\n\n");
+        previousLevel = f->level;
+        previousId = dirs;
         dirs++;
-        printf("my name is %s level is %d\n", name, f->level);
-        printf("my id is %d, my parent is %d\n\n", dirs, parentId);
-
+        // previousId = dirs;
+        // addIntItemToList(stack, dirs);
+        // printRoute(stack);
+        // if (f->level != levelOfParent)
+        // {
+        //     levelOfParent = f->level;
+        //     parentId = dirs;
+        // }
+        // if (f->level > levelOfParent)
+        // {
+        //     removeFirstItemFromList(stack);
+        //     printRoute(stack);
+        // }
+        // printf("my name is %s level is %d\n", name, f->level);
+        // printf("my id is %d, my parent is %d\n\n", dirs, parentId);
         // printf("base is %s\n", name + f->base);
     }
     return 0;
@@ -244,9 +268,11 @@ void scan_dir(const char *path)
 
 void mapFromDirTree(Room ***roomsPtr, const char *path)
 {
-    // nftw(path, countFolders, MAXFD, FTW_DEPTH);
+    idStack = newList();
+    lvlStack = newList();
 
-    scan_dir(".");
+    nftw(path, countFolders, MAXFD, FTW_PHYS);
+
     // Room **rooms = createRooms(dirs);
 
     // nftw(path, countFolders, MAXFD, FTW_PHYS);
