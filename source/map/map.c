@@ -181,19 +181,45 @@ void findRouteFromTo(int from, int to, Room **rooms, int size, int threadCount)
 }
 
 int dirs = 0;
+int parentId = 0;
+int levelOfParent = 0;
 
-int forEachFolder(const char *name, const struct stat *s, int type, struct FTW *f)
+int countFolders(const char *name, const struct stat *s, int type, struct FTW *f)
+{
+    if (type == FTW_DP)
+    {
+        if (f->level != levelOfParent)
+        {
+            levelOfParent = f->level;
+            parentId = dirs;
+        }
+        else if (f->level < levelOfParent)
+        {
+        }
+        dirs++;
+        printf("my name is %s level is %d\n", name, f->level);
+        printf("my id is %d, my parent is %d\n\n", dirs, parentId);
+
+        // printf("base is %s\n", name + f->base);
+    }
+    return 0;
+}
+
+int addRoomsFromFolders(const char *name, const struct stat *s, int type, struct FTW *f)
 {
     if (type == FTW_D)
     {
-        dirs++;
-        printf("%d ", dirs);
-        printf("size of %s is %ld\n", name, s->st_size);
     }
     return 0;
 }
 
 void mapFromDirTree(Room ***roomsPtr, const char *path)
 {
-    nftw(path, forEachFolder, MAXFD, FTW_PHYS);
+    nftw(path, countFolders, MAXFD, FTW_DEPTH);
+
+    // Room **rooms = createRooms(dirs);
+
+    // nftw(path, countFolders, MAXFD, FTW_PHYS);
+    // printRooms(rooms, dirs);
+    // freeRoomsArray(rooms, dirs);
 }

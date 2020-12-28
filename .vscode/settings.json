@@ -2,6 +2,9 @@
   "cmake.configureOnOpen": true,
   "files.enableTrash": true,
   "files.associations": {
-    "list": "c"
+    "list": "c",
+    "*.tcc": "c",
+    "fstream": "c",
+    "functional": "c"
   }
 }

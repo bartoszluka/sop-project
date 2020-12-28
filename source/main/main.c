@@ -134,7 +134,7 @@ void game()
 }
 int main(int argc, char *argv[])
 {
-    mapFromDirTree(NULL, "/etc");
+    mapFromDirTree(NULL, "./build");
     return 0;
     game();
 
