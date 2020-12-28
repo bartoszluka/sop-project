@@ -18,6 +18,8 @@ void printItem(Item *item);
 
 void printAllItems(Item *items[ITEMS_IN_ROOM]);
 
+void freeItems(Item *items[ITEMS_IN_ROOM]);
+
 void freeItem(Item *item);
 
 int hasSlot(Item *items[ITEMS_IN_ROOM]);

@@ -40,3 +40,7 @@ int gamerHasSlot(Gamer *gamer)
 {
     return hasSlot(gamer->items);
 }
+
+void emptyGamersInv(Gamer *gamer){
+    
+}

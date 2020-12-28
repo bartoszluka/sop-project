@@ -18,4 +18,6 @@ void printGamer(Gamer *gamer);
 
 int gamerHasSlot(Gamer *gamer);
 
+void emptyGamersInv(Gamer *gamer);
+
 #endif // GAMER_H_

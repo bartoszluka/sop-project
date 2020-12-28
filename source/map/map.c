@@ -59,22 +59,18 @@ void addItemsToRooms(Room **rooms, int arraySize)
             rooms[roomId] = newRoom(roomId);
         }
 
-        int j = 0;
         //czy w pokoj o numerze j jest pelny
-        while (j < ITEMS_IN_ROOM && rooms[roomId]->items[j])
-        {
-            j++;
-        }
+        int slot = roomHasSlot(rooms[roomId]);
         //jesli nie to dodajemy mu przedmiot
-        if (j < ITEMS_IN_ROOM)
+        if (slot > -1)
         {
             while (destinationRooms[rand] >= 2 || rand == roomId)
             {
-                rand++;
-                rand = rand % arraySize;
-                // rand = rand_r(getpid()) % (arraySize);
+                // rand++;
+                // rand = rand % arraySize;
+                rand = rand_r(&pid) % (arraySize);
             }
-            rooms[roomId]->items[j] = newItem(i, rand);
+            rooms[roomId]->items[slot] = newItem(i, rand);
             destinationRooms[rand]++;
         }
         //jesli tak to idziemy dalej
@@ -82,9 +78,23 @@ void addItemsToRooms(Room **rooms, int arraySize)
     free(destinationRooms);
 }
 
-void startNewGame(const char *path){
+void startNewGame(const char *path)
+{
     Room **rooms;
-    
+    Gamer *gamer;
+    int size;
+
+    readSaveFile(&rooms, &gamer, path, &size);
+    if (roomsAreEmpty(rooms, size))
+    {
+        addItemsToRooms(rooms, size);
+    }
+
+    gamer->position = rand() % size;
+    emptyGamersInv(gamer);
+    if(gamerHasSlot(gamer)==0){
+
+    }
 
 }
 
@@ -95,7 +105,7 @@ void generateRandomMap(int arraySize, const char *path)
     generateConnections(rooms, arraySize);
 
     writeMapToFile(rooms, arraySize, path);
-    
+
     // addItemsToRooms(rooms, arraySize);
 
     freeRoomsArray(rooms, arraySize);
