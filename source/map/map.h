@@ -7,6 +7,7 @@
 #include "../item/item.h"
 #include "../err.h"
 #include <pthread.h>
+#include <ftw.h>
 
 #define MAX_NUMBER_OF_ITERATIONS 1000
 

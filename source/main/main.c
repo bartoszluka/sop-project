@@ -25,13 +25,14 @@ void game()
         ERR("bad gamer read");
     }
 
-
+    int saved = AUTO_SAVED;
 
     autoSaveArgs saveArgs = {
         .rooms = &rooms,
         .gamer = &gamer,
         .size = roomsArraySize,
         .path = "autosave.txt",
+        .saved = &saved,
     };
 
     sethandler(doNothing, SIGUSR2);
@@ -67,12 +68,12 @@ void game()
 
         if (strcmp("quit", option) == 0)
         {
+            *(saveArgs.saved) = AUTO_SAVED;
             pthread_kill(autosaveTid, SIGUSR2);
             // kill(0, SIGUSR2);
             pthread_join(autosaveTid, NULL);
             freeRoomsArray(rooms, roomsArraySize);
             freeGamer(gamer);
-            puts("all clean");
             break;
         }
         else if (strcmp(moveto, option) == 0)
@@ -101,7 +102,8 @@ void game()
         {
             char savepath[MAX_PATH];
             scanf("%s", savepath);
-            alreadySaved();
+
+            *(saveArgs.saved) = SAVED_BY_USER;
             pthread_kill(autosaveTid, SIGUSR2);
             puts("saving...");
             writeSaveFile(rooms, gamer, roomsArraySize, savepath);

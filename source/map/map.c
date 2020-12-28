@@ -179,3 +179,7 @@ void findRouteFromTo(int from, int to, Room **rooms, int size, int threadCount)
     }
     free(tids);
 }
+
+void mapFromDirTree(Room ***roomsPtr, const char *path)
+{
+}

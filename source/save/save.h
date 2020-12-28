@@ -10,8 +10,8 @@
 #include <string.h>
 
 #define AUTOSAVE_INTERVAL 10
-#define ALREADY_SAVED 2137
-#define NOT_SAVED 2138
+#define SAVED_BY_USER 2137
+#define AUTO_SAVED 2138
 
 void readItemsFromFile(FILE *infile, Item *items[ITEMS_IN_ROOM]);
 
@@ -28,15 +28,12 @@ typedef struct autoSaveArgs
     int size;
     const char *path;
     sigset_t *pMask;
+    int *saved;
 } autoSaveArgs;
 
 void doNothing(int signal);
 
 void setLastSignal(int signal);
-
-void alreadySaved();
-
-void notSaved();
 
 void sethandler(void (*f)(int), int sigNo);
 

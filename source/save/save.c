@@ -108,20 +108,10 @@ void sethandler(void (*f)(int), int sigNo)
     if (-1 == sigaction(sigNo, &action, NULL))
         ERR("sigaction");
 }
-volatile sig_atomic_t lastSignal = NOT_SAVED;
 
 void doNothing(int signal)
 {
     // puts("dostałem sygnał");
-}
-
-void alreadySaved()
-{
-    lastSignal = ALREADY_SAVED;
-}
-void notSaved()
-{
-    lastSignal = NOT_SAVED;
 }
 
 void *autoSave(void *args)
@@ -132,10 +122,9 @@ void *autoSave(void *args)
         int unslept = sleep(AUTOSAVE_INTERVAL);
         if (unslept)
         {
-            printf("unslept is %d\n", unslept);
-            if (lastSignal == ALREADY_SAVED)
+            if (*(saveArgs->saved) == SAVED_BY_USER)
             {
-                notSaved();
+                *(saveArgs->saved) = AUTO_SAVED;
                 continue;
             }
             else
