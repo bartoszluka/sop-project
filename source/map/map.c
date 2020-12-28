@@ -42,12 +42,8 @@ void generateConnections(Room **rooms, int arraySize)
     }
 }
 
-void generateRandomMap(Room ***roomsPtr, int arraySize)
+void addItemsToRooms(Room **rooms, int arraySize)
 {
-    Room **rooms = createRooms(arraySize);
-
-    generateConnections(rooms, arraySize);
-
     int numberOfItems = 3 * arraySize / 2;
     srand(time(NULL));
     unsigned int pid = getpid();
@@ -84,8 +80,17 @@ void generateRandomMap(Room ***roomsPtr, int arraySize)
         //jesli tak to idziemy dalej
     }
     free(destinationRooms);
+}
 
-    *roomsPtr = rooms;
+void generateRandomMap(int arraySize)
+{
+    Room **rooms = createRooms(arraySize);
+
+    generateConnections(rooms, arraySize);
+
+    addItemsToRooms(rooms, arraySize);
+
+    freeRoomsArray(rooms, arraySize)
 }
 
 void *findRoute(void *args)
@@ -253,7 +258,7 @@ void mapFromDirTree(const char *pathFrom, const char *pathTo)
     {
         freeList(lvlStack);
     }
-    
+
     Gamer *gamer = newGamer(0);
     writeSaveFile(globalRooms, gamer, size, pathTo);
     freeGamer(gamer);

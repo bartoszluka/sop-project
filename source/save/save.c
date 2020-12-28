@@ -65,6 +65,11 @@ void writeItemsToFile(FILE *outfile, Item *items[ITEMS_IN_ROOM])
         }
     }
 }
+void writeMapToFile(Room **rooms, int size, const char *path)
+{
+    
+}
+
 void writeSaveFile(Room **rooms, Gamer *gamer, int size, const char *path)
 {
     FILE *outfile;

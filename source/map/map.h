@@ -34,7 +34,7 @@ void addConnection(Room **rooms, int room1, int room2);
 
 void generateConnections(Room **rooms, int arraySize);
 
-void generateRandomMap(Room ***roomsPtr, int arraySize);
+void generateRandomMap(int arraySize);
 
 void *findRoute(void *args);
 

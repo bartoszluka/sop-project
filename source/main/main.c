@@ -27,6 +27,7 @@ void game()
 
     int saved = AUTO_SAVED;
     char *autosavePath = getenv("GAME_AUTOSAVE");
+    // puts(autosavePath);
     autoSaveArgs saveArgs = {
         .rooms = &rooms,
         .gamer = &gamer,
@@ -139,12 +140,58 @@ void setEnvVariable(char *savepath)
     printf("%ld\n", strlen(savepath));
     if (strlen(savepath) == 0)
     {
-        strcpy(savepath, "$HOME/.game-autosave");
+        sprintf(savepath, "%s/%s", getenv("HOME"), ".game-autosave");
     }
-    puts(savepath);
     if (setenv(autoSaveEnv, savepath, 1))
     {
         ERR("setenv");
+    }
+    // puts(getenv(autoSaveEnv));
+}
+
+void mainMenu()
+{
+    char option[20];
+    while (1)
+    {
+        scanf("%s", option);
+
+        if (strcmp("map-from-dir-tree", option) == 0)
+        {
+            char pathFrom[MAX_PATH];
+            char pathTo[MAX_PATH];
+
+            scanf("%s %s", pathFrom, pathTo);
+            // scanf("%s", pathTo);
+            mapFromDirTree(pathFrom, pathTo);
+        }
+        else if (strcmp("generate-random-map", option) == 0)
+        {
+            int n;
+            char savepath[MAX_PATH];
+            scanf("%d %s", &n, savepath);
+            generateRandomMap()
+        }
+        else if (strcmp("start-game", option) == 0)
+        {
+            break;
+        }
+        else if (strcmp("load-game", option) == 0)
+        {
+            break;
+        }
+        else if (strcmp("exit", option) == 0)
+        {
+            break;
+        }
+        else if (strcmp("exit", option) == 0)
+        {
+            break;
+        }
+        else
+        {
+            printf("unknown command \"%s\"", option);
+        }
     }
 }
 
@@ -163,7 +210,6 @@ int main(int argc, char *argv[])
         case 'b':
             if (optarg)
             {
-                printf("%s\n", optarg);
                 strcpy(savepath, optarg);
             }
             break;
@@ -188,6 +234,9 @@ int main(int argc, char *argv[])
     }
 
     setEnvVariable(savepath);
+
+    mainMenu();
+
     // game();
 
     return 0;
