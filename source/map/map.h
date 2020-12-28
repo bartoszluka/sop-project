@@ -8,6 +8,7 @@
 #include "../room/room.h"
 #include "../item/item.h"
 #include "../err.h"
+#include "../save/save.h"
 #include <pthread.h>
 #include <ftw.h>
 #include <dirent.h>
@@ -39,10 +40,10 @@ void *findRoute(void *args);
 
 void findRouteFromTo(int from, int to, Room **rooms, int size, int threadCount);
 
-void mapFromDirTree(Room ***roomsPtr, const char *path);
+void mapFromDirTree(const char *pathFrom, const char *pathTo);
 
 int countFolders(const char *name, const struct stat *s, int type, struct FTW *f);
 
-void mapFromDirTree(Room ***roomsPtr, const char *path);
-void scan_dir(const char *path);
+int addRoomsFromFolders(const char *name, const struct stat *s, int type, struct FTW *f);
+
 #endif // MAP_H_

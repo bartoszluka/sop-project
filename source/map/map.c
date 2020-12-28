@@ -181,50 +181,19 @@ void findRouteFromTo(int from, int to, Room **rooms, int size, int threadCount)
 }
 
 int dirs = 0;
-int parentId = 0;
-int levelOfParent = 0;
 int previousLevel = -1;
 int previousId = -1;
+
 List *idStack = NULL;
 List *lvlStack = NULL;
+
+Room **globalRooms = NULL;
 
 int countFolders(const char *name, const struct stat *s, int type, struct FTW *f)
 {
     if (type == FTW_D)
     {
-        printf("[id:%d, lvl:%d] %s", dirs, f->level, name);
-        if (f->level > previousLevel)
-        {
-            addIntItemToList(idStack, previousId);
-            addIntItemToList(lvlStack, previousLevel);
-        }
-        else if (f->level < previousLevel)
-        {
-            removeFirstItemFromList(idStack);
-            removeFirstItemFromList(lvlStack);
-        }
-        
-        printf(" - łączę %d i %d", dirs, firstItemFromList(idStack));
-        printf("\n\n");
-        previousLevel = f->level;
-        previousId = dirs;
         dirs++;
-        // previousId = dirs;
-        // addIntItemToList(stack, dirs);
-        // printRoute(stack);
-        // if (f->level != levelOfParent)
-        // {
-        //     levelOfParent = f->level;
-        //     parentId = dirs;
-        // }
-        // if (f->level > levelOfParent)
-        // {
-        //     removeFirstItemFromList(stack);
-        //     printRoute(stack);
-        // }
-        // printf("my name is %s level is %d\n", name, f->level);
-        // printf("my id is %d, my parent is %d\n\n", dirs, parentId);
-        // printf("base is %s\n", name + f->base);
     }
     return 0;
 }
@@ -233,49 +202,65 @@ int addRoomsFromFolders(const char *name, const struct stat *s, int type, struct
 {
     if (type == FTW_D)
     {
+        printRoute(idStack);
+        printf("[id:%d, lvl:%d] %s", dirs, f->level, name);
+        if (f->level > previousLevel)
+        {
+            if (previousId != -1)
+            {
+                addIntItemToList(idStack, previousId);
+                addIntItemToList(lvlStack, previousLevel);
+            }
+        }
+        else if (f->level < previousLevel)
+        {
+            for (int i = 0; i < previousLevel - f->level; i++)
+            {
+                removeFirstItemFromList(idStack);
+                removeFirstItemFromList(lvlStack);
+            }
+        }
+        if (idStack->Count > 0)
+        {
+            printf(" - łączę %d i %d", dirs, firstItemFromList(idStack));
+            addConnection(globalRooms, dirs, firstItemFromList(idStack));
+        }
+        printf("\n\n");
+        previousLevel = f->level;
+        previousId = dirs;
+        dirs++;
     }
     return 0;
 }
 
-void scan_dir(const char *path)
+void mapFromDirTree(const char *pathFrom, const char *pathTo)
 {
-    DIR *dirp;
-    struct dirent *dp;
-    struct stat filestat;
-    if (NULL == (dirp = opendir(path)))
-        ERR("opendir");
-    do
-    {
-        errno = 0;
-        if ((dp = readdir(dirp)) != NULL)
-        {
-            if (lstat(dp->d_name, &filestat))
-                ERR("lstat");
-            if (S_ISDIR(filestat.st_mode))
-            {
-                if (strcmp(".", dp->d_name) != 0 && strcmp("..", dp->d_name) != 0)
-                {
-                    printf("%s\n", dp->d_name);
-                }
-            }
-        }
-    } while (dp != NULL);
-    if (errno != 0)
-        ERR("readdir");
-    if (closedir(dirp))
-        ERR("closedir");
-}
+    nftw(pathFrom, countFolders, MAXFD, FTW_PHYS);
 
-void mapFromDirTree(Room ***roomsPtr, const char *path)
-{
+    int size = dirs;
+    printf("%d\n", size);
+    globalRooms = createRooms(size);
+    printRooms(globalRooms, size);
+
+    dirs = 0;
+
     idStack = newList();
     lvlStack = newList();
 
-    nftw(path, countFolders, MAXFD, FTW_PHYS);
+    nftw(pathFrom, addRoomsFromFolders, MAXFD, FTW_PHYS);
 
+    printRooms(globalRooms, size);
     // Room **rooms = createRooms(dirs);
 
+    if (idStack)
+        freeList(idStack);
+    if (lvlStack)
+        freeList(lvlStack);
+
+    Gamer *gamer = newGamer(0);
+    writeSaveFile(globalRooms, gamer, size, pathTo);
+    freeGamer(gamer);
     // nftw(path, countFolders, MAXFD, FTW_PHYS);
     // printRooms(rooms, dirs);
-    // freeRoomsArray(rooms, dirs);
+    freeRoomsArray(globalRooms, size);
 }
