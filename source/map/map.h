@@ -1,6 +1,6 @@
+#define _XOPEN_SOURCE 500
 #ifndef MAP_H_
 #define MAP_H_
-#define _XOPEN_SOURCE 500
 #define MAXFD 20
 #include <unistd.h>
 #include <sys/time.h>
@@ -34,7 +34,9 @@ void addConnection(Room **rooms, int room1, int room2);
 
 void generateConnections(Room **rooms, int arraySize);
 
-void generateRandomMap(int arraySize);
+void generateRandomMap(int arraySize, const char *path);
+
+void startNewGame(const char *path);
 
 void *findRoute(void *args);
 
@@ -45,6 +47,5 @@ void mapFromDirTree(const char *pathFrom, const char *pathTo);
 int countFolders(const char *name, const struct stat *s, int type, struct FTW *f);
 
 int addRoomsFromFolders(const char *name, const struct stat *s, int type, struct FTW *f);
-
 
 #endif // MAP_H_

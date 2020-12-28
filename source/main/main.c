@@ -170,10 +170,13 @@ void mainMenu()
             int n;
             char savepath[MAX_PATH];
             scanf("%d %s", &n, savepath);
-            generateRandomMap()
+            generateRandomMap(n, savepath);
         }
         else if (strcmp("start-game", option) == 0)
         {
+            char pathFrom[MAX_PATH];
+            scanf("%s", pathFrom);
+            startNewGame(pathFrom);
             break;
         }
         else if (strcmp("load-game", option) == 0)

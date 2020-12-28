@@ -82,15 +82,23 @@ void addItemsToRooms(Room **rooms, int arraySize)
     free(destinationRooms);
 }
 
-void generateRandomMap(int arraySize)
+void startNewGame(const char *path){
+    Room **rooms;
+    
+
+}
+
+void generateRandomMap(int arraySize, const char *path)
 {
     Room **rooms = createRooms(arraySize);
 
     generateConnections(rooms, arraySize);
 
-    addItemsToRooms(rooms, arraySize);
+    writeMapToFile(rooms, arraySize, path);
+    
+    // addItemsToRooms(rooms, arraySize);
 
-    freeRoomsArray(rooms, arraySize)
+    freeRoomsArray(rooms, arraySize);
 }
 
 void *findRoute(void *args)
@@ -259,9 +267,7 @@ void mapFromDirTree(const char *pathFrom, const char *pathTo)
         freeList(lvlStack);
     }
 
-    Gamer *gamer = newGamer(0);
-    writeSaveFile(globalRooms, gamer, size, pathTo);
-    freeGamer(gamer);
+    writeMapToFile(globalRooms, size, pathTo);
 
     freeRoomsArray(globalRooms, size);
 }
