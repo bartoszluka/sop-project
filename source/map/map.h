@@ -10,6 +10,8 @@
 #include "../err.h"
 #include <pthread.h>
 #include <ftw.h>
+#include <dirent.h>
+#include <string.h>
 
 #define MAX_NUMBER_OF_ITERATIONS 1000
 
@@ -42,4 +44,5 @@ void mapFromDirTree(Room ***roomsPtr, const char *path);
 int countFolders(const char *name, const struct stat *s, int type, struct FTW *f);
 
 void mapFromDirTree(Room ***roomsPtr, const char *path);
+void scan_dir(const char *path);
 #endif // MAP_H_

@@ -121,3 +121,16 @@ void copyList(List *from, List *to)
         p = p->next;
     }
 }
+
+Node *removeFirstItemFromList(List *list)
+{
+    if (!list || !list->head)
+    {
+        return NULL;
+    }
+    list->Count--;
+    Node *node = list->head;
+    list->head = list->head->next;
+    node->next = NULL;
+    return node;
+}

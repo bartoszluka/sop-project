@@ -42,4 +42,7 @@ void addIntItemToList(List *list, int value);
 
 void copyList(List *from, List *to);
 
+Node *removeFirstItemFromList(List *list);
+
+
 #endif //LIST_H

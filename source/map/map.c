@@ -213,10 +213,40 @@ int addRoomsFromFolders(const char *name, const struct stat *s, int type, struct
     return 0;
 }
 
+void scan_dir(const char *path)
+{
+    DIR *dirp;
+    struct dirent *dp;
+    struct stat filestat;
+    if (NULL == (dirp = opendir(path)))
+        ERR("opendir");
+    do
+    {
+        errno = 0;
+        if ((dp = readdir(dirp)) != NULL)
+        {
+            if (lstat(dp->d_name, &filestat))
+                ERR("lstat");
+            if (S_ISDIR(filestat.st_mode))
+            {
+                if (strcmp(".", dp->d_name) != 0 && strcmp("..", dp->d_name) != 0)
+                {
+                    printf("%s\n", dp->d_name);
+                }
+            }
+        }
+    } while (dp != NULL);
+    if (errno != 0)
+        ERR("readdir");
+    if (closedir(dirp))
+        ERR("closedir");
+}
+
 void mapFromDirTree(Room ***roomsPtr, const char *path)
 {
-    nftw(path, countFolders, MAXFD, FTW_DEPTH);
+    // nftw(path, countFolders, MAXFD, FTW_DEPTH);
 
+    scan_dir(".");
     // Room **rooms = createRooms(dirs);
 
     // nftw(path, countFolders, MAXFD, FTW_PHYS);
