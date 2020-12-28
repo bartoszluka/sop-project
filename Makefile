@@ -79,7 +79,7 @@ all: directories $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(HIDE)echo Linking $@
-	$(HIDE)$(CC) $(OBJS) -ggdb -o $(TARGET) $(LDLIBS)
+	$(HIDE)$(CC) $(OBJS) -ggdb -g -Wall -o $(TARGET) $(LDLIBS)
 
 # Include dependencies
 -include $(DEPS)

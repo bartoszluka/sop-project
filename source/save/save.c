@@ -99,3 +99,20 @@ void writeSaveFile(Room **rooms, Gamer *gamer, int size, const char *path)
     // close file
     fclose(outfile);
 }
+
+void *autoSave(void *args)
+{
+    autoSaveArgs *saveArgs = (autoSaveArgs *)args;
+    while (1)
+    {
+        int slept = sleep(AUTOSAVE_INTERVAL);
+
+        while (slept != 0)
+        {
+            sleep(slept);
+        }
+
+        writeSaveFile(*saveArgs->rooms, *saveArgs->gamer, saveArgs->size, saveArgs->path);
+    }
+    return NULL;
+}

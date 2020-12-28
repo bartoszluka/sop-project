@@ -1,5 +1,7 @@
 #include "../game/game.h"
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -15,7 +17,6 @@ void game()
     Gamer *gamer;
     int roomsArraySize;
     readSaveFile(&rooms, &gamer, path, &roomsArraySize);
-
     if (!rooms)
     {
         ERR("bad rooms read");
@@ -24,6 +25,15 @@ void game()
     {
         ERR("bad gamer read");
     }
+
+    autoSaveArgs saveArgs = {
+        .rooms = &rooms,
+        .gamer = &gamer,
+        .size = roomsArraySize,
+        .path = "autosave.txt"};
+    pthread_t autosaveTid;
+    pthread_create(&autosaveTid, autoSave, &saveArgs, NULL);
+
     puts("=====gamer=====");
     printGamer(gamer);
     puts("=====rooms=====");
@@ -54,7 +64,6 @@ void game()
         if (strcmp("quit", option) == 0)
         {
             freeRoomsArray(rooms, roomsArraySize);
-            // free(rooms);
             freeGamer(gamer);
             break;
         }
@@ -86,11 +95,11 @@ void game()
             scanf("%s", savepath);
             writeSaveFile(rooms, gamer, roomsArraySize, savepath);
         }
-        else if (strcmp("list-me", option) == 0)
+        else if (strcmp(listme, option) == 0)
         {
             printGamer(gamer);
         }
-        else if (strcmp("list-room", option) == 0)
+        else if (strcmp(listroom, option) == 0)
         {
             printRoom(rooms[gamer->position]);
         }
@@ -116,13 +125,14 @@ int main(int argc, char *argv[])
 
     char c;
     char savepath[MAX_PATH] = "";
-    while ((c = getopt(argc, argv, "b:")) != -1)
+    while ((c = getopt(argc, argv, "b::")) != -1)
     {
         switch (c)
         {
         case 'b':
             // printf("%s\n", optarg);
-            strcpy(savepath, optarg);
+            if (optarg)
+                strcpy(savepath, optarg);
             break;
         case ':':
             fprintf(stderr,

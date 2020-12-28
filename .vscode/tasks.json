@@ -3,17 +3,19 @@
   "tasks": [
     {
       "type": "shell",
-      "label": "g++ build active file",
-      "command": "/usr/bin/g++",
-      "args": [
-        "-g",
-        "${file}",
-        "-Wall",
-        "-lpthread",
-        "-lm",
-        "-o",
-        "${fileDirname}/${fileBasenameNoExtension}"
-      ],
+      "label": "gcc build active file",
+      // "command": "/usr/bin/g++",
+      // "args": [
+      //   "-g",
+      //   "${file}",
+      //   "-Wall",
+      //   "-lpthread",
+      //   "-lm",
+      //   "-o",
+      //   "${fileDirname}/${fileBasenameNoExtension}",
+      //   "$"
+      // ],
+      "command": "${workspaceRoot}/build.sh",
       "options": {
         "cwd": "/usr/bin"
       },

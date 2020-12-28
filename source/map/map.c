@@ -92,8 +92,6 @@ void *findRoute(void *args)
 {
     routeArguments *connection = (routeArguments *)args;
 
-    printf("u %d\nv %d\n", connection->u, connection->v);
-
     int iterations = 0;
     int currentRoom = connection->u;
     routeResult *result = (routeResult *)malloc(sizeof(routeResult));
@@ -104,8 +102,6 @@ void *findRoute(void *args)
     result->exists = 0;
     result->route = newList();
     addIntItemToList(result->route, currentRoom);
-
-    printRoute(result->route);
 
     while (iterations < MAX_NUMBER_OF_ITERATIONS &&
            currentRoom != connection->v)
