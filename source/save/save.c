@@ -103,16 +103,22 @@ void writeSaveFile(Room **rooms, Gamer *gamer, int size, const char *path)
 void *autoSave(void *args)
 {
     autoSaveArgs *saveArgs = (autoSaveArgs *)args;
-    while (1)
+    // for (int i = 0; i < 5; i++)
+    while (*saveArgs->work)
     {
-        int slept = sleep(AUTOSAVE_INTERVAL);
-
-        while (slept != 0)
+        int unslept = sleep(AUTOSAVE_INTERVAL);
+        if (unslept)
         {
-            sleep(slept);
+            printf("unslept is %d\n", unslept);
+            break;
         }
-
+        // while (unslept != 0)
+        // {
+        //     sleep(unslept);
+        // }
         writeSaveFile(*saveArgs->rooms, *saveArgs->gamer, saveArgs->size, saveArgs->path);
+        puts("saved");
     }
+    free(saveArgs->work);
     return NULL;
 }

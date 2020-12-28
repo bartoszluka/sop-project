@@ -6,8 +6,9 @@
 #include "../gamer/gamer.h"
 #include "../err.h"
 #include <pthread.h>
+#include <unistd.h>
 
-#define AUTOSAVE_INTERVAL 2
+#define AUTOSAVE_INTERVAL 5
 void readItemsFromFile(FILE *infile, Item *items[ITEMS_IN_ROOM]);
 
 void readSaveFile(Room ***roomsPtr, Gamer **gamerPtr, const char *path, int *sizeOfArray);
@@ -22,6 +23,7 @@ typedef struct autoSaveArgs
     Gamer **gamer;
     int size;
     const char *path;
+    int *work;
 } autoSaveArgs;
 
 void *autoSave(void *args);

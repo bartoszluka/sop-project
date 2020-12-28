@@ -9,6 +9,15 @@
 
 #define MAX_PATH 100
 
+void sethandler(void (*f)(int), int sigNo)
+{
+    struct sigaction action;
+    memset(&action, 0, sizeof(struct sigaction));
+    action.sa_handler = f;
+    if (-1 == sigaction(sigNo, &action, NULL))
+        ERR("sigaction");
+}
+
 void game()
 {
     const char *path = "save3.save";
@@ -25,14 +34,23 @@ void game()
     {
         ERR("bad gamer read");
     }
-
+    int *autoSaveWork = (int *)malloc(sizeof(int));
+    if (!autoSaveWork)
+    {
+        ERR("malloc");
+    }
+    *autoSaveWork = 1;
     autoSaveArgs saveArgs = {
         .rooms = &rooms,
         .gamer = &gamer,
         .size = roomsArraySize,
-        .path = "autosave.txt"};
+        .path = "autosave.txt",
+        .work = autoSaveWork,
+    };
     pthread_t autosaveTid;
-    pthread_create(&autosaveTid, autoSave, &saveArgs, NULL);
+    pthread_create(&autosaveTid, NULL, autoSave, &saveArgs);
+
+    // sethandler(SIG_IGN, SIGALRM);
 
     puts("=====gamer=====");
     printGamer(gamer);
@@ -63,6 +81,9 @@ void game()
 
         if (strcmp("quit", option) == 0)
         {
+            // pthread_kill(autosaveTid, SIGUSR2);
+            *autoSaveWork = 0;
+            pthread_join(autosaveTid, NULL);
             freeRoomsArray(rooms, roomsArraySize);
             freeGamer(gamer);
             break;
