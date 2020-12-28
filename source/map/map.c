@@ -78,25 +78,6 @@ void addItemsToRooms(Room **rooms, int arraySize)
     free(destinationRooms);
 }
 
-void startNewGame(const char *path)
-{
-    Room **rooms;
-    Gamer *gamer;
-    int size;
-
-    readSaveFile(&rooms, &gamer, path, &size);
-    if (roomsAreEmpty(rooms, size))
-    {
-        addItemsToRooms(rooms, size);
-    }
-
-    gamer->position = rand() % size;
-    emptyGamersInv(gamer);
-    if(gamerHasSlot(gamer)==0){
-
-    }
-
-}
 
 void generateRandomMap(int arraySize, const char *path)
 {

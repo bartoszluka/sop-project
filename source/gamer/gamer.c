@@ -19,7 +19,7 @@ void freeGamer(Gamer *gamer)
     for (int i = 0; i < ITEMS_IN_ROOM; i++)
     {
         if (gamer->items[i])
-            free(gamer->items[i]);
+            freeItem(gamer->items[i]);
     }
     free(gamer);
 }
@@ -41,6 +41,13 @@ int gamerHasSlot(Gamer *gamer)
     return hasSlot(gamer->items);
 }
 
-void emptyGamersInv(Gamer *gamer){
-    
+void emptyGamersInv(Gamer *gamer)
+{
+    for (int i = 0; i < ITEMS_IN_ROOM; i++)
+    {
+        if (gamer->items[i])
+        {
+            freeItem(gamer->items[i]);
+        }
+    }
 }

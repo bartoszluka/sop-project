@@ -7,6 +7,7 @@
 #include "../map/map.h"
 #include "../save/save.h"
 #include "../err.h"
+#define MAX_PATH 100
 
 void pickUpItem(Gamer *gamer, Room *room, int itemId);
 
@@ -19,5 +20,17 @@ void optionPickUp(Room **rooms, Gamer *gamer, int optionInt);
 void optionDrop(Room **rooms, Gamer *gamer, int optionInt);
 
 void optionFindPath(Room **rooms, int size, Gamer *gamer, int threadCount, int to);
+
+void startNewGame(const char *path);
+
+void loadGame(const char *path);
+
+void playGame(Room **rooms, int size, Gamer *gamer);
+
+void parseInput(int argc, char *argv[]);
+
+void mainMenu();
+
+void setEnvVariable(char *savepath);
 
 #endif //GAME_H_

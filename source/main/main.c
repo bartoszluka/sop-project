@@ -6,8 +6,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define MAX_PATH 100
-
 void game()
 {
     const char *path = "save3.save";
@@ -134,109 +132,13 @@ void game()
     }
 }
 
-void setEnvVariable(char *savepath)
-{
-    const char *autoSaveEnv = "GAME_AUTOSAVE";
-    printf("%ld\n", strlen(savepath));
-    if (strlen(savepath) == 0)
-    {
-        sprintf(savepath, "%s/%s", getenv("HOME"), ".game-autosave");
-    }
-    if (setenv(autoSaveEnv, savepath, 1))
-    {
-        ERR("setenv");
-    }
-    // puts(getenv(autoSaveEnv));
-}
-
-void mainMenu()
-{
-    char option[20];
-    while (1)
-    {
-        scanf("%s", option);
-
-        if (strcmp("map-from-dir-tree", option) == 0)
-        {
-            char pathFrom[MAX_PATH];
-            char pathTo[MAX_PATH];
-
-            scanf("%s %s", pathFrom, pathTo);
-            // scanf("%s", pathTo);
-            mapFromDirTree(pathFrom, pathTo);
-        }
-        else if (strcmp("generate-random-map", option) == 0)
-        {
-            int n;
-            char savepath[MAX_PATH];
-            scanf("%d %s", &n, savepath);
-            generateRandomMap(n, savepath);
-        }
-        else if (strcmp("start-game", option) == 0)
-        {
-            char pathFrom[MAX_PATH];
-            scanf("%s", pathFrom);
-            startNewGame(pathFrom);
-            break;
-        }
-        else if (strcmp("load-game", option) == 0)
-        {
-            break;
-        }
-        else if (strcmp("exit", option) == 0)
-        {
-            break;
-        }
-        else if (strcmp("exit", option) == 0)
-        {
-            break;
-        }
-        else
-        {
-            printf("unknown command \"%s\"", option);
-        }
-    }
-}
 
 int main(int argc, char *argv[])
 {
     // mapFromDirTree("/etc", "newsave.txt");
     // return 0;
     // game();
-
-    char c;
-    char savepath[MAX_PATH] = "";
-    while ((c = getopt(argc, argv, ":b:")) != -1)
-    {
-        switch (c)
-        {
-        case 'b':
-            if (optarg)
-            {
-                strcpy(savepath, optarg);
-            }
-            break;
-        case ':':
-            switch (optopt)
-            {
-            case 'b':
-                // strcpy(savepath, optarg);
-                break;
-            default:
-                fprintf(stderr,
-                        "Option -%c requires an operand\n", optopt);
-                exit(EXIT_FAILURE);
-            }
-            break;
-        case '?':
-            fprintf(stderr,
-                    "Unrecognized option: '-%c'\n", optopt);
-            exit(EXIT_FAILURE);
-            break;
-        }
-    }
-
-    setEnvVariable(savepath);
+    parseInput(argc, argv);
 
     mainMenu();
 

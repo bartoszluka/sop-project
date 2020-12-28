@@ -36,7 +36,7 @@ void generateConnections(Room **rooms, int arraySize);
 
 void generateRandomMap(int arraySize, const char *path);
 
-void startNewGame(const char *path);
+void addItemsToRooms(Room **rooms, int arraySize);
 
 void *findRoute(void *args);
 
