@@ -46,4 +46,5 @@ int countFolders(const char *name, const struct stat *s, int type, struct FTW *f
 
 int addRoomsFromFolders(const char *name, const struct stat *s, int type, struct FTW *f);
 
+
 #endif // MAP_H_

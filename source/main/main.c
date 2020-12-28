@@ -134,7 +134,7 @@ void game()
 }
 int main(int argc, char *argv[])
 {
-    mapFromDirTree("./source","newsave.txt");
+    mapFromDirTree("/etc", "newsave.txt");
     return 0;
     game();
 
