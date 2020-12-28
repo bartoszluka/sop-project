@@ -100,11 +100,20 @@ void writeSaveFile(Room **rooms, Gamer *gamer, int size, const char *path)
     fclose(outfile);
 }
 
+void sethandler(void (*f)(int), int sigNo)
+{
+    struct sigaction action;
+    memset(&action, 0, sizeof(struct sigaction));
+    action.sa_handler = f;
+    if (-1 == sigaction(sigNo, &action, NULL))
+        ERR("sigaction");
+}
+
 void *autoSave(void *args)
 {
     autoSaveArgs *saveArgs = (autoSaveArgs *)args;
     // for (int i = 0; i < 5; i++)
-    while (*saveArgs->work)
+    while (1)
     {
         int unslept = sleep(AUTOSAVE_INTERVAL);
         if (unslept)
@@ -112,10 +121,6 @@ void *autoSave(void *args)
             printf("unslept is %d\n", unslept);
             break;
         }
-        // while (unslept != 0)
-        // {
-        //     sleep(unslept);
-        // }
         writeSaveFile(*saveArgs->rooms, *saveArgs->gamer, saveArgs->size, saveArgs->path);
         puts("saved");
     }

@@ -26,6 +26,8 @@ typedef struct autoSaveArgs
     int *work;
 } autoSaveArgs;
 
+void sethandler(void (*f)(int), int sigNo);
+
 void *autoSave(void *args);
 
 #endif //SAVE_H_

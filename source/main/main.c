@@ -9,15 +9,6 @@
 
 #define MAX_PATH 100
 
-void sethandler(void (*f)(int), int sigNo)
-{
-    struct sigaction action;
-    memset(&action, 0, sizeof(struct sigaction));
-    action.sa_handler = f;
-    if (-1 == sigaction(sigNo, &action, NULL))
-        ERR("sigaction");
-}
-
 void game()
 {
     const char *path = "save3.save";
@@ -48,9 +39,15 @@ void game()
         .work = autoSaveWork,
     };
     pthread_t autosaveTid;
-    pthread_create(&autosaveTid, NULL, autoSave, &saveArgs);
 
-    // sethandler(SIG_IGN, SIGALRM);
+    sigset_t oldMask, newMask;
+    sigemptyset(&newMask);
+    sigaddset(&newMask, SIGUSR2);
+    // sigaddset(&newMask, SIGQUIT);
+    if (pthread_sigmask(SIG_BLOCK, &newMask, &oldMask))
+        ERR("SIG_BLOCK error");
+
+    pthread_create(&autosaveTid, NULL, autoSave, &saveArgs);
 
     puts("=====gamer=====");
     printGamer(gamer);
@@ -81,11 +78,10 @@ void game()
 
         if (strcmp("quit", option) == 0)
         {
-            // pthread_kill(autosaveTid, SIGUSR2);
-            *autoSaveWork = 0;
             pthread_join(autosaveTid, NULL);
             freeRoomsArray(rooms, roomsArraySize);
             freeGamer(gamer);
+            puts("all clean");
             break;
         }
         else if (strcmp(moveto, option) == 0)
