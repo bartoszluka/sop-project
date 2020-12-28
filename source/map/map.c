@@ -202,8 +202,6 @@ int addRoomsFromFolders(const char *name, const struct stat *s, int type, struct
 {
     if (type == FTW_D)
     {
-        printRoute(idStack);
-        printf("[id:%d, lvl:%d] %s", dirs, f->level, name);
         if (f->level > previousLevel)
         {
             if (previousId != -1)
@@ -222,10 +220,8 @@ int addRoomsFromFolders(const char *name, const struct stat *s, int type, struct
         }
         if (idStack->Count > 0)
         {
-            printf(" - łączę %d i %d", dirs, firstItemFromList(idStack));
             addConnection(globalRooms, dirs, firstItemFromList(idStack));
         }
-        printf("\n\n");
         previousLevel = f->level;
         previousId = dirs;
         dirs++;
@@ -238,9 +234,7 @@ void mapFromDirTree(const char *pathFrom, const char *pathTo)
     nftw(pathFrom, countFolders, MAXFD, FTW_PHYS);
 
     int size = dirs;
-    printf("%d\n", size);
     globalRooms = createRooms(size);
-    printRooms(globalRooms, size);
 
     dirs = 0;
 
@@ -249,18 +243,20 @@ void mapFromDirTree(const char *pathFrom, const char *pathTo)
 
     nftw(pathFrom, addRoomsFromFolders, MAXFD, FTW_PHYS);
 
-    printRooms(globalRooms, size);
     // Room **rooms = createRooms(dirs);
 
     if (idStack)
+    {
         freeList(idStack);
+    }
     if (lvlStack)
+    {
         freeList(lvlStack);
-
+    }
+    
     Gamer *gamer = newGamer(0);
     writeSaveFile(globalRooms, gamer, size, pathTo);
     freeGamer(gamer);
-    // nftw(path, countFolders, MAXFD, FTW_PHYS);
-    // printRooms(rooms, dirs);
+
     freeRoomsArray(globalRooms, size);
 }
