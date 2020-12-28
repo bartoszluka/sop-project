@@ -134,8 +134,9 @@ void game()
 }
 int main(int argc, char *argv[])
 {
-    game();
+    mapFromDirTree(NULL, "/etc");
     return 0;
+    game();
 
     char c;
     char savepath[MAX_PATH] = "";

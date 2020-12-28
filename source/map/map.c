@@ -180,6 +180,20 @@ void findRouteFromTo(int from, int to, Room **rooms, int size, int threadCount)
     free(tids);
 }
 
+int dirs = 0;
+
+int forEachFolder(const char *name, const struct stat *s, int type, struct FTW *f)
+{
+    if (type == FTW_D)
+    {
+        dirs++;
+        printf("%d ", dirs);
+        printf("size of %s is %ld\n", name, s->st_size);
+    }
+    return 0;
+}
+
 void mapFromDirTree(Room ***roomsPtr, const char *path)
 {
+    nftw(path, forEachFolder, MAXFD, FTW_PHYS);
 }

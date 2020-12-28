@@ -1,8 +1,10 @@
 #ifndef MAP_H_
 #define MAP_H_
-
+#define _XOPEN_SOURCE 500
+#define MAXFD 20
 #include <unistd.h>
 #include <sys/time.h>
+#include <sys/stat.h>
 #include "../room/room.h"
 #include "../item/item.h"
 #include "../err.h"
@@ -35,4 +37,9 @@ void *findRoute(void *args);
 
 void findRouteFromTo(int from, int to, Room **rooms, int size, int threadCount);
 
+void mapFromDirTree(Room ***roomsPtr, const char *path);
+
+int forEachFolder(const char *name, const struct stat *s, int type, struct FTW *f);
+
+void mapFromDirTree(Room ***roomsPtr, const char *path);
 #endif // MAP_H_
