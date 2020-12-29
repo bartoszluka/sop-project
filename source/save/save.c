@@ -139,7 +139,7 @@ void *autoSave(void *args)
             }
         }
         puts("saving...");
-        puts(saveArgs->path);
+        // puts(saveArgs->path);
         writeSaveFile(*saveArgs->rooms, *saveArgs->gamer, saveArgs->size, saveArgs->path);
         puts("saved");
     }

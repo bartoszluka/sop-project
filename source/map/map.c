@@ -54,17 +54,17 @@ void addItemsToRooms(Room **rooms, int arraySize)
     for (int i = 0; i < numberOfItems; i++)
     {
         int roomId = i % arraySize;
-        if (!rooms[roomId])
-        {
-            rooms[roomId] = newRoom(roomId);
-        }
+        // if (!rooms[roomId])
+        // {
+        //     rooms[roomId] = newRoom(roomId);
+        // }
 
-        //czy w pokoj o numerze j jest pelny
+        //czy pokoj o numerze roomId jest pelny
         int slot = roomHasSlot(rooms[roomId]);
         //jesli nie to dodajemy mu przedmiot
         if (slot > -1)
         {
-            while (destinationRooms[rand] >= 2 || rand == roomId)
+            while (destinationRooms[rand] >= ITEMS_IN_ROOM || rand == roomId)
             {
                 // rand++;
                 // rand = rand % arraySize;
@@ -77,7 +77,6 @@ void addItemsToRooms(Room **rooms, int arraySize)
     }
     free(destinationRooms);
 }
-
 
 void generateRandomMap(int arraySize, const char *path)
 {

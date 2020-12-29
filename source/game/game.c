@@ -133,6 +133,7 @@ void playGame(Room **rooms, int roomsArraySize, Gamer *gamer)
             pthread_join(autosaveTid, NULL);
             freeRoomsArray(rooms, roomsArraySize);
             freeGamer(gamer);
+            puts("you quited the game");
             break;
         }
         else if (strcmp(moveto, option) == 0)
@@ -199,10 +200,14 @@ void startNewGame(const char *path)
     int size;
 
     readSaveFile(&rooms, &gamer, path, &size);
+
+    printRooms(rooms, size);
     if (roomsAreEmpty(rooms, size))
     {
         addItemsToRooms(rooms, size);
     }
+    puts("====after====");
+    printRooms(rooms, size);
 
     gamer->position = rand() % size;
     emptyGamersInv(gamer);
