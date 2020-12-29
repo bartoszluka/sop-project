@@ -77,10 +77,24 @@ void printRooms(Room *rooms[], int arraySize)
     }
 }
 
-int roomsAreEmpty(Room *rooms[], int size){
+int roomIsEmpty(Room *room)
+{
+    int itemCount = 0;
+    for (int i = 0; i < ITEMS_IN_ROOM; i++)
+    {
+        if (room->items[i])
+        {
+            itemCount++;
+        }
+    }
+    return itemCount > 0 ? 0 : 1;
+}
+
+int roomsAreEmpty(Room *rooms[], int size)
+{
     for (int i = 0; i < size; i++)
     {
-        if (roomHasSlot(rooms[i]) > -1)
+        if (!roomIsEmpty(rooms[i]))
         {
             return 0;
         }

@@ -24,6 +24,8 @@ void printRoom(Room *room);
 
 void printRooms(Room *rooms[], int arraySize);
 
+int roomIsEmpty(Room *room);
+
 int roomsAreEmpty(Room *rooms[], int size);
 
 int roomHasSlot(Room *room);

@@ -201,13 +201,12 @@ void startNewGame(const char *path)
 
     readSaveFile(&rooms, &gamer, path, &size);
 
-    printRooms(rooms, size);
     if (roomsAreEmpty(rooms, size))
     {
         addItemsToRooms(rooms, size);
     }
-    puts("====after====");
-    printRooms(rooms, size);
+
+    srand(getpid() * size);
 
     gamer->position = rand() % size;
     emptyGamersInv(gamer);
@@ -245,7 +244,6 @@ void loadGame(const char *path)
 void setEnvVariable(char *savepath)
 {
     const char *autoSaveEnv = "GAME_AUTOSAVE";
-    printf("%ld\n", strlen(savepath));
     if (strlen(savepath) == 0)
     {
         sprintf(savepath, "%s/%s", getenv("HOME"), ".game-autosave");
@@ -298,7 +296,7 @@ void mainMenu()
         }
         else
         {
-            printf("unknown command \"%s\"", option);
+            printf("unknown command \"%s\"\n", option);
         }
     }
 }

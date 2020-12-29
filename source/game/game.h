@@ -7,6 +7,13 @@
 #include "../map/map.h"
 #include "../save/save.h"
 #include "../err.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #define MAX_PATH 100
 
 void pickUpItem(Gamer *gamer, Room *room, int itemId);
