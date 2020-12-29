@@ -319,7 +319,6 @@ void parseInput(int argc, char *argv[])
             switch (optopt)
             {
             case 'b':
-                // strcpy(savepath, optarg);
                 break;
             default:
                 fprintf(stderr,

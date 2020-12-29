@@ -12,7 +12,7 @@ make -C build -f ../Makefile
 
 
 # Run build
-#./app
+# build/sop_game
 
 # Create some space again
 echo
